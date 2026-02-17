@@ -6,6 +6,8 @@ description: Analyze uncommitted changes and create logical, well-structured git
 
 Analyze uncommitted changes and create logical, well-structured git commits with conventional commit messages, no footer, no author.
 
+Pre-commit hooks enforce: ruff check, ruff format, ty type check, uv lockfile consistency, and conventional commit message format. Hooks are check-only — they never modify files.
+
 ## Your Task
 
 1. Analyze the repository state:
@@ -19,6 +21,7 @@ Analyze uncommitted changes and create logical, well-structured git commits with
    - Group by component (related files together)
    - Follow dependency order (foundational changes first)
    - Separate concerns (don't mix features and fixes)
+   - **ty checks all files** — if any commit touches backend Python, ALL modified Python files must be staged together so ty sees a consistent state
 
 3. Generate conventional commit messages:
    - Format: type(scope): description
@@ -37,6 +40,8 @@ Analyze uncommitted changes and create logical, well-structured git commits with
      EOF
      )"
 
+   - Pre-commit hooks run automatically — if they fail, fix the issue and retry
+   - Never use --no-verify
    - Repeat for each group
 
 5. Show results:
@@ -54,7 +59,7 @@ Follow this priority order:
 
 ## Quality Guidelines
 
-- Each commit should be buildable and testable
+- Each commit must pass all pre-commit hooks (ruff, ty, commitlint)
 - Commits tell a story of how the project was built
 - No "WIP" or "fix" commits - make them meaningful
 - Don't mix unrelated changes
