@@ -1,13 +1,15 @@
-import logging
-
+import structlog
 from sqlalchemy import Engine
 from sqlmodel import Session, select
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
 from app.core.db import engine
+from app.core.logging import setup_logging
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+setup_logging(log_level="INFO", json_output=False)
+logger = structlog.stdlib.get_logger(__name__)
+# stdlib logger needed for tenacity callbacks
+_stdlib_logger = structlog.stdlib.get_logger(__name__)._logger
 
 max_tries = 60 * 5  # 5 minutes
 wait_seconds = 1
@@ -16,8 +18,8 @@ wait_seconds = 1
 @retry(
     stop=stop_after_attempt(max_tries),
     wait=wait_fixed(wait_seconds),
-    before=before_log(logger, logging.INFO),
-    after=after_log(logger, logging.WARN),
+    before=before_log(_stdlib_logger, 20),  # INFO = 20
+    after=after_log(_stdlib_logger, 30),  # WARNING = 30
 )
 def init(db_engine: Engine) -> None:
     try:
@@ -25,14 +27,14 @@ def init(db_engine: Engine) -> None:
             # Try to create session to check if DB is awake
             session.exec(select(1))
     except Exception as e:
-        logger.error(e)
-        raise e
+        logger.error("db_not_ready", error=str(e))
+        raise
 
 
 def main() -> None:
-    logger.info("Initializing service")
+    logger.info("initializing_service")
     init(engine)
-    logger.info("Service finished initializing")
+    logger.info("service_initialized")
 
 
 if __name__ == "__main__":

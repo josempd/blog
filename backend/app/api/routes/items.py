@@ -1,10 +1,11 @@
 import uuid
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from sqlmodel import col, func, select
 
 from app.api.deps import CurrentUser, SessionDep
+from app.core.exceptions import ForbiddenError, NotFoundError
 from app.models import Item, ItemCreate, ItemPublic, ItemsPublic, ItemUpdate, Message
 
 router = APIRouter(prefix="/items", tags=["items"])
@@ -41,7 +42,7 @@ def read_items(
         )
         items = session.exec(statement).all()
 
-    return ItemsPublic(data=items, count=count)
+    return ItemsPublic(data=items, count=count)  # type: ignore[arg-type]
 
 
 @router.get("/{id}", response_model=ItemPublic)
@@ -51,9 +52,9 @@ def read_item(session: SessionDep, current_user: CurrentUser, id: uuid.UUID) -> 
     """
     item = session.get(Item, id)
     if not item:
-        raise HTTPException(status_code=404, detail="Item not found")
+        raise NotFoundError("Item", id)
     if not current_user.is_superuser and (item.owner_id != current_user.id):
-        raise HTTPException(status_code=403, detail="Not enough permissions")
+        raise ForbiddenError("Not enough permissions")
     return item
 
 
@@ -84,9 +85,9 @@ def update_item(
     """
     item = session.get(Item, id)
     if not item:
-        raise HTTPException(status_code=404, detail="Item not found")
+        raise NotFoundError("Item", id)
     if not current_user.is_superuser and (item.owner_id != current_user.id):
-        raise HTTPException(status_code=403, detail="Not enough permissions")
+        raise ForbiddenError("Not enough permissions")
     update_dict = item_in.model_dump(exclude_unset=True)
     item.sqlmodel_update(update_dict)
     session.add(item)
@@ -104,9 +105,9 @@ def delete_item(
     """
     item = session.get(Item, id)
     if not item:
-        raise HTTPException(status_code=404, detail="Item not found")
+        raise NotFoundError("Item", id)
     if not current_user.is_superuser and (item.owner_id != current_user.id):
-        raise HTTPException(status_code=403, detail="Not enough permissions")
+        raise ForbiddenError("Not enough permissions")
     session.delete(item)
     session.commit()
     return Message(message="Item deleted successfully")
