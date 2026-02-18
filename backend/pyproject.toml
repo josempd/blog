@@ -85,6 +85,7 @@ dynamic_context = "test_function"
 [tool.coverage.report]
 show_missing = true
 sort = "-Cover"
+fail_under = 50
 
 [tool.coverage.html]
 show_contexts = true

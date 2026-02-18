@@ -27,6 +27,17 @@ Routes (thin HTTP handlers)
 - **Models** define DB tables via SQLModel. **Schemas** define API shapes via Pydantic v2.
 - **Content** modules (frontmatter, renderer, loader) are pure functions — no DB, no side effects.
 
+## Scopes
+
+9 scopes with 100% codebase coverage — see [docs/scopes.md](docs/scopes.md) for full definitions and path mappings.
+
+| Category | Scopes |
+|----------|--------|
+| Infrastructure | `core`, `auth` |
+| Domain | `blog`, `content`, `portfolio` |
+| Presentation | `frontend` |
+| Cross-cutting | `feeds`, `tests`, `ci` |
+
 ## Project Structure
 
 ```
@@ -82,7 +93,7 @@ Current phase: see [PLAN.md](PLAN.md)
 
 - Format: `type(scope): description` — max 100 chars, lowercase, no period
 - Types: feat, fix, docs, chore, refactor, test, style
-- Scopes: project, repository, backend, all, or feature-specific (blog, content)
+- Scopes: core, auth, blog, content, portfolio, frontend, feeds, tests, ci (see [docs/scopes.md](docs/scopes.md))
 - No co-author footer
 
 ### Frontend

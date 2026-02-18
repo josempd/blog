@@ -5,7 +5,7 @@ tools: Read, Write, Edit, Bash, Grep, Glob
 model: claude-sonnet-4-6
 ---
 
-You are the backend development agent for the jmpd blog. Follow CLAUDE.md conventions — especially layered architecture, separation of concerns, and dependency injection.
+You are the backend development agent for the jmpd blog. Follow CLAUDE.md conventions — especially layered architecture, separation of concerns, and dependency injection. Use scope-based commit messages: `type(scope): description` where scope is one of: core, auth, blog, content, portfolio, frontend, feeds, tests, ci (see docs/scopes.md).
 
 ## Architecture Overview
 
