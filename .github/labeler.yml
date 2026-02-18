@@ -1,0 +1,96 @@
+# Path → scope label mapping for actions/labeler v6
+# See docs/scopes.md for full scope definitions
+
+# -- Infrastructure --
+
+scope:core:
+  - changed-files:
+      - any-glob-to-any-file:
+          - backend/app/core/**
+          - '!backend/app/core/security.py'
+          - backend/app/main.py
+          - backend/app/api/deps.py
+          - backend/app/api/main.py
+          - backend/app/api/__init__.py
+          - backend/app/api/routes/utils.py
+          - backend/app/backend_pre_start.py
+          - backend/app/initial_data.py
+          - backend/app/utils.py
+          - backend/app/__init__.py
+
+scope:auth:
+  - changed-files:
+      - any-glob-to-any-file:
+          - backend/app/core/security.py
+          - backend/app/api/routes/login.py
+          - backend/app/api/routes/users.py
+          - backend/app/api/routes/private.py
+          - backend/app/models.py
+          - backend/app/crud.py
+
+# -- Domain --
+
+scope:blog:
+  - changed-files:
+      - any-glob-to-any-file:
+          - backend/app/models/post.py
+          - backend/app/models/tag.py
+          - backend/app/schemas/post.py
+          - backend/app/schemas/tag.py
+          - backend/app/crud/post.py
+          - backend/app/services/post.py
+          - backend/app/api/routes/posts.py
+          - backend/app/pages/blog.py
+
+scope:content:
+  - changed-files:
+      - any-glob-to-any-file:
+          - backend/app/content/**
+          - content/**
+
+scope:portfolio:
+  - changed-files:
+      - any-glob-to-any-file:
+          - backend/app/models/project.py
+          - backend/app/schemas/project.py
+          - backend/app/crud/project.py
+          - backend/app/services/project.py
+          - backend/app/api/routes/projects.py
+          - backend/app/pages/portfolio.py
+          - backend/app/pages/about.py
+
+# -- Presentation --
+
+scope:frontend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - backend/app/pages/**
+          - backend/app/templates/**
+          - backend/app/static/**
+          - islands/**
+
+# -- Cross-cutting --
+
+scope:feeds:
+  - changed-files:
+      - any-glob-to-any-file:
+          - backend/app/api/routes/feeds.py
+          - backend/app/pages/feeds.py
+          - backend/app/templates/feeds/**
+
+scope:tests:
+  - changed-files:
+      - any-glob-to-any-file:
+          - backend/tests/**
+          - e2e/**
+
+scope:ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - .github/**
+          - backend/Dockerfile
+          - backend/.dockerignore
+          - compose*.yml
+          - Makefile
+          - .pre-commit-config.yaml
+          - backend/scripts/**
