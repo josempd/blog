@@ -49,7 +49,7 @@ repos:
         args:
           - --force-scope
           - --scopes
-          - project,repository,backend,all,blog,content
+          - core,auth,blog,content,portfolio,frontend,feeds,tests,ci
           - feat
           - fix
           - docs
