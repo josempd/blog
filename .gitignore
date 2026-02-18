@@ -1,6 +1,7 @@
 # IDE
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 
 # Environment — contains secrets, never commit
 .env
