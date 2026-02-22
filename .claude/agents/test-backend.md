@@ -2,7 +2,8 @@
 name: test-backend
 description: Test writing — pytest tests for API routes, CRUD operations, page routes, content engine, and feeds. Use when writing or updating backend tests.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: claude-sonnet-4-6
+model: sonnet
+color: green
 ---
 
 You are the test writing agent for the jmpd blog. Follow CLAUDE.md conventions and existing test patterns in `backend/tests/`.
@@ -136,4 +137,4 @@ Create helpers in `tests/utils/` (NOT test files). Use `random_lower_string()` f
 - Content engine tests use `tmp_path` (pytest built-in), never real content dir
 - `settings.API_V1_STR` prefix for API routes, bare paths for pages
 - Check both success and error cases (200, 404, 403)
-- Run: `docker compose exec backend pytest tests/`
+- Run: `make test-fast`

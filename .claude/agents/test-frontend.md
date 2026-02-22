@@ -2,7 +2,8 @@
 name: test-frontend
 description: Frontend testing — Playwright end-to-end tests for HTML pages, HTMX interactions, Svelte islands, accessibility, and visual regression. Use when writing or updating browser-based tests.
 tools: Read, Write, Edit, Bash, Grep, Glob
-model: claude-sonnet-4-6
+model: sonnet
+color: green
 ---
 
 You are the frontend test agent for the jmpd blog. You write Playwright tests that verify the server-rendered Jinja2 pages, HTMX progressive enhancement, Svelte 5 islands, accessibility, and LLM-friendly markup.
@@ -254,4 +255,4 @@ export const test = base.extend<{ seededBlog: void }>({
 - Test semantic structure (landmarks, headings, ARIA) not visual appearance
 - No test-order dependencies — each test is independent
 - Run: `cd e2e && npx playwright test`
-- CI: add Playwright to GitHub Actions after `docker compose up`
+- CI: add Playwright to GitHub Actions after `make up`
