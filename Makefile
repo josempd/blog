@@ -82,15 +82,15 @@ test-fast: ## Run pytest without coverage (faster)
 
 .PHONY: migrate
 migrate: ## Generate alembic migration (usage: make migrate m="add post model")
-	$(RUN) alembic -c app/alembic.ini revision --autogenerate -m "$(m)"
+	$(RUN) alembic revision --autogenerate -m "$(m)"
 
 .PHONY: upgrade
 upgrade: ## Apply all pending migrations
-	$(RUN) alembic -c app/alembic.ini upgrade head
+	$(RUN) alembic upgrade head
 
 .PHONY: downgrade
 downgrade: ## Rollback one migration
-	$(RUN) alembic -c app/alembic.ini downgrade -1
+	$(RUN) alembic downgrade -1
 
 .PHONY: db-reset
 db-reset: ## Drop and recreate the database (destructive!)

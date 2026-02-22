@@ -36,8 +36,14 @@ backend/app/api/main.py                    → core
 backend/app/backend_pre_start.py           → core
 backend/app/initial_data.py                → core
 backend/app/utils.py                       → core
+backend/app/models/base.py                 → core
+backend/app/schemas/common.py              → core
 
 backend/app/core/security.py               → auth
+backend/app/models/user.py                 → auth
+backend/app/schemas/user.py                → auth
+backend/app/schemas/auth.py                → auth
+backend/app/crud/user.py                   → auth
 backend/app/api/routes/login.py            → auth
 backend/app/api/routes/users.py            → auth
 backend/app/api/routes/private.py          → auth
