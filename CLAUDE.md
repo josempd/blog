@@ -102,6 +102,14 @@ Current phase: see [PLAN.md](PLAN.md)
 - Vendored assets only — no CDN links
 - Semantic HTML — `<article>`, `<time datetime>`, `<nav aria-label>`, heading hierarchy
 - Single `style.css` — system fonts, 60–70ch prose width
+- Spacing scale — only use defined steps via CSS custom properties (`--space-1` through `--space-7`), no arbitrary values
+- Type ramp — consistent font sizes via CSS custom properties (`--text-sm` through `--text-3xl`), no ad-hoc sizes
+- Disciplined color palette — neutrals + one accent, WCAG AA contrast minimum
+- Consistent component language — shared radii, shadows, padding across all partials
+- HTMX loading states — `hx-indicator` on every async interaction
+- No decorative effects — no gradients, sparkles, animations-for-show
+- Visible focus styles — every interactive element has outline/ring on focus, never bare `outline: none`
+- Portfolio audience — digestible by both developers and non-technical stakeholders
 
 ## Do NOT
 
@@ -114,17 +122,45 @@ Current phase: see [PLAN.md](PLAN.md)
 - Use `Any` as a return type — be explicit
 - Leave dead code, unused imports, or commented-out blocks
 - Add debug mode or dev flags in production config
+- Use arbitrary spacing or font-size values — use the defined scale tokens
+- Mix visual styles between components — radii, shadows, padding must be consistent
+- Add decorative animations or gradient effects
 
 ## Running Locally
 
 ```bash
-docker compose up -d                        # Start all services (dev mode)
-docker compose exec backend bash            # Shell into backend
-docker compose exec backend pytest tests/   # Run tests
-docker compose exec backend bash scripts/lint.sh    # Lint
-docker compose exec backend bash scripts/format.sh  # Format
-docker compose exec backend alembic -c app/alembic.ini revision --autogenerate -m "description"
-docker compose exec backend alembic -c app/alembic.ini upgrade head
+# Lifecycle
+make up              # Start all services (detached)
+make down            # Stop all services
+make build           # Rebuild backend image
+make restart         # Restart backend (keeps DB running)
+make logs            # Tail backend logs
+make logs-all        # Tail all service logs
+make ps              # Show running services
+
+# Development
+make shell           # Shell into backend container
+make dbshell         # psql into the database
+
+# Code quality
+make lint            # Run ty + ruff checks
+make fmt             # Auto-format with ruff
+make check           # Lint + test (CI equivalent)
+
+# Testing
+make test            # Run pytest with coverage
+make test-fast       # Run pytest without coverage (faster)
+
+# Database
+make migrate m="description"   # Generate alembic migration
+make upgrade                   # Apply all pending migrations
+make downgrade                 # Rollback one migration
+make db-reset                  # Drop and recreate database (destructive!)
+
+# Dependencies
+make lock            # Regenerate uv.lock
+make install         # Install backend deps locally (for IDE support)
+make setup           # Full dev setup (deps + pre-commit hooks)
 ```
 
 - **App**: http://localhost:8000

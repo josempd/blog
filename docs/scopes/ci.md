@@ -35,4 +35,4 @@ None — ci is independent infrastructure tooling.
 
 - Pre-commit hooks: `pre-commit run --all-files`
 - CI workflows: push a branch and verify jobs pass
-- Docker: `docker compose up -d` and verify services start
+- Docker: `make up` and verify services start
