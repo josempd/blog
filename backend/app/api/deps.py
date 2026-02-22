@@ -17,7 +17,8 @@ from app.core.exceptions import (
     NotFoundError,
     UnauthorizedError,
 )
-from app.models import TokenPayload, User
+from app.models import User
+from app.schemas import TokenPayload
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/login/access-token"

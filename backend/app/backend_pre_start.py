@@ -1,3 +1,5 @@
+import logging
+
 import structlog
 from sqlalchemy import Engine
 from sqlmodel import Session, select
@@ -9,7 +11,7 @@ from app.core.logging import setup_logging
 setup_logging(log_level="INFO", json_output=False)
 logger = structlog.stdlib.get_logger(__name__)
 # stdlib logger needed for tenacity callbacks
-_stdlib_logger = structlog.stdlib.get_logger(__name__)._logger
+_stdlib_logger = logging.getLogger(__name__)
 
 max_tries = 60 * 5  # 5 minutes
 wait_seconds = 1

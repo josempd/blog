@@ -7,7 +7,8 @@ from sqlmodel import Session, select
 from app import crud
 from app.core.config import settings
 from app.core.security import verify_password
-from app.models import User, UserCreate
+from app.models import User
+from app.schemas import UserCreate
 from tests.utils.user import create_random_user
 from tests.utils.utils import random_email, random_lower_string
 
@@ -84,7 +85,7 @@ def test_get_non_existing_user_as_superuser(
         headers=superuser_token_headers,
     )
     assert r.status_code == 404
-    assert r.json() == {"detail": "User not found"}
+    assert "User not found" in r.json()["detail"]
 
 
 def test_get_existing_user_current_user(client: TestClient, db: Session) -> None:
@@ -126,7 +127,7 @@ def test_get_existing_user_permissions_error(
         headers=normal_user_token_headers,
     )
     assert r.status_code == 403
-    assert r.json() == {"detail": "The user doesn't have enough privileges"}
+    assert r.json()["detail"] == "The user doesn't have enough privileges"
 
 
 def test_get_non_existing_user_permissions_error(
@@ -140,7 +141,7 @@ def test_get_non_existing_user_permissions_error(
         headers=normal_user_token_headers,
     )
     assert r.status_code == 403
-    assert r.json() == {"detail": "The user doesn't have enough privileges"}
+    assert r.json()["detail"] == "The user doesn't have enough privileges"
 
 
 def test_create_user_existing_username(
@@ -158,7 +159,7 @@ def test_create_user_existing_username(
         json=data,
     )
     created_user = r.json()
-    assert r.status_code == 400
+    assert r.status_code == 409
     assert "_id" not in created_user
 
 
@@ -351,7 +352,7 @@ def test_register_user_already_exists_error(client: TestClient) -> None:
         f"{settings.API_V1_STR}/users/signup",
         json=data,
     )
-    assert r.status_code == 400
+    assert r.status_code == 409
     assert r.json()["detail"] == "The user with this email already exists in the system"
 
 
@@ -391,7 +392,7 @@ def test_update_user_not_exists(
         json=data,
     )
     assert r.status_code == 404
-    assert r.json()["detail"] == "The user with this id does not exist in the system"
+    assert "User not found" in r.json()["detail"]
 
 
 def test_update_user_email_exists(
@@ -487,7 +488,7 @@ def test_delete_user_not_found(
         headers=superuser_token_headers,
     )
     assert r.status_code == 404
-    assert r.json()["detail"] == "User not found"
+    assert "User not found" in r.json()["detail"]
 
 
 def test_delete_user_current_super_user_error(
