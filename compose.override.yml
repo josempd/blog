@@ -68,19 +68,8 @@ services:
       - run
       - --reload
       - "app/main.py"
-    develop:
-      watch:
-        - path: ./backend
-          action: sync
-          target: /app/backend
-          ignore:
-            - ./backend/.venv
-            - .venv
-        - path: ./backend/pyproject.toml
-          action: rebuild
     volumes:
-      - ./backend/tests:/app/backend/tests
-      - ./backend/htmlcov:/app/backend/htmlcov
+      - ./backend:/app/backend
     environment:
       SMTP_HOST: "mailcatcher"
       SMTP_PORT: "1025"
@@ -92,6 +81,10 @@ services:
     ports:
       - "1080:1080"
       - "1025:1025"
+
+  prestart:
+    volumes:
+      - ./backend:/app/backend
 
 networks:
   traefik-public:

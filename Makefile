@@ -10,8 +10,8 @@ DB  := $(DC) exec db
 # ---------------------------------------------------------------------------
 
 .PHONY: up
-up: ## Start all services with file watch/sync
-	$(DC) up --watch
+up: ## Start all services (detached)
+	$(DC) up -d
 
 .PHONY: down
 down: ## Stop all services
