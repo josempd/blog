@@ -81,4 +81,4 @@ def get_tags_with_counts(
         statement = statement.where(Post.published == True)  # noqa: E712
     statement = statement.group_by(Tag.id).having(func.count(PostTagLink.post_id) > 0)
     results = session.exec(statement).all()
-    return [(tag, count) for tag, count in results]
+    return list(results)
