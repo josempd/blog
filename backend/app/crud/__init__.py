@@ -13,6 +13,11 @@ from app.crud.project import (  # noqa: F401
 from app.crud.user import (  # noqa: F401
     authenticate,
     create_user,
+    delete_user,
     get_user_by_email,
+    get_user_by_id,
+    get_users,
+    update_password,
     update_user,
+    update_user_me,
 )
