@@ -70,6 +70,7 @@ services:
       - "app/main.py"
     volumes:
       - ./backend:/app/backend
+      - ./content:/app/content
     environment:
       SMTP_HOST: "mailcatcher"
       SMTP_PORT: "1025"
@@ -85,6 +86,7 @@ services:
   prestart:
     volumes:
       - ./backend:/app/backend
+      - ./content:/app/content
 
 networks:
   traefik-public:
