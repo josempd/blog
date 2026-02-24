@@ -1,19 +1,32 @@
 from datetime import datetime, timezone
 
-from sqlmodel import Session, col, select
+from sqlmodel import Session, col, func, select
 
 from app.models.project import Project
 from app.schemas.project import ProjectUpsert
 
 
-def get_projects(*, session: Session, featured_only: bool = False) -> list[Project]:
-    statement = select(Project)
+def get_projects(
+    *,
+    session: Session,
+    featured_only: bool = False,
+    skip: int = 0,
+    limit: int = 20,
+) -> tuple[list[Project], int]:
+    base = select(Project)
+    count_base = select(func.count()).select_from(Project)
+
     if featured_only:
-        statement = statement.where(Project.featured == True)  # noqa: E712
-    statement = statement.order_by(
-        col(Project.sort_order).asc(), col(Project.created_at).desc()
-    )
-    return list(session.exec(statement).all())
+        base = base.where(Project.featured == True)  # noqa: E712
+        count_base = count_base.where(Project.featured == True)  # noqa: E712
+
+    count = session.exec(count_base).one()
+    projects = session.exec(
+        base.order_by(col(Project.sort_order).asc(), col(Project.created_at).desc())
+        .offset(skip)
+        .limit(limit)
+    ).all()
+    return list(projects), count
 
 
 def get_project_by_slug(*, session: Session, slug: str) -> Project | None:

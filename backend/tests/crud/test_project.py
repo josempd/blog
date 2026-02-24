@@ -54,8 +54,9 @@ def test_get_projects(db: Session) -> None:
     data = _project_data()
     upsert_project(session=db, source_path=source, data=data)
 
-    projects = get_projects(session=db)
+    projects, count = get_projects(session=db)
     assert len(projects) >= 1
+    assert count >= 1
     slugs = [p.slug for p in projects]
     assert data.slug in slugs
 
@@ -75,10 +76,30 @@ def test_get_projects_featured_only(db: Session) -> None:
         data=_project_data(slug=normal_slug, featured=False),
     )
 
-    projects = get_projects(session=db, featured_only=True)
+    projects, _count = get_projects(session=db, featured_only=True)
     slugs = [p.slug for p in projects]
     assert featured_slug in slugs
     assert normal_slug not in slugs
+
+
+def test_get_projects_pagination(db: Session) -> None:
+    slugs = []
+    for i in range(3):
+        slug = f"page-{random_lower_string()}"
+        slugs.append(slug)
+        upsert_project(
+            session=db,
+            source_path=f"projects/{slug}.md",
+            data=_project_data(slug=slug, sort_order=i),
+        )
+
+    projects, count = get_projects(session=db, skip=0, limit=2)
+    assert len(projects) == 2
+    assert count >= 3
+
+    projects2, count2 = get_projects(session=db, skip=2, limit=2)
+    assert len(projects2) >= 1
+    assert count2 == count
 
 
 def test_get_project_by_slug(db: Session) -> None:
