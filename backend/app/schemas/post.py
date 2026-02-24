@@ -1,13 +1,14 @@
 import uuid
 from datetime import datetime
 
+from pydantic import Field
 from sqlmodel import SQLModel
 
 
 class PostUpsert(SQLModel):
-    title: str
-    slug: str
-    excerpt: str | None = None
+    title: str = Field(max_length=255)
+    slug: str = Field(max_length=255)
+    excerpt: str | None = Field(default=None, max_length=500)
     content_markdown: str
     content_html: str
     published: bool = False
@@ -15,8 +16,8 @@ class PostUpsert(SQLModel):
 
 
 class TagCreate(SQLModel):
-    name: str
-    slug: str
+    name: str = Field(max_length=100)
+    slug: str = Field(max_length=100)
 
 
 class TagPublic(SQLModel):
