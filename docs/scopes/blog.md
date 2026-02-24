@@ -7,8 +7,7 @@ Blog domain — post and tag models, schemas, CRUD, services, and API/page route
 ```
 backend/app/models/post.py         # Post model (title, slug, content, published_at)
 backend/app/models/tag.py          # Tag model, PostTagLink many-to-many
-backend/app/schemas/post.py        # PostCreate, PostUpdate, PostPublic, PostsPublic
-backend/app/schemas/tag.py         # TagPublic
+backend/app/schemas/post.py        # PostUpsert, TagCreate, PostPublic, PostDetail, PostsPublic, TagPublic, TagWithCount
 backend/app/crud/post.py           # Post queries (by slug, paginated list, upsert)
 backend/app/services/post.py       # PostService (create, get, list, sync from content)
 backend/app/api/routes/posts.py    # JSON API endpoints (/api/v1/posts)
@@ -19,7 +18,6 @@ backend/app/pages/blog.py          # HTML page routes (/blog, /blog/:slug)
 
 - **core** — db, exceptions, deps
 - **content** — renderer (markdown → HTML), loader (source files)
-- **auth** — author_id foreign key to User
 
 ## Testing
 

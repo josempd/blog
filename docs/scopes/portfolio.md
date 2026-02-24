@@ -6,7 +6,7 @@ Portfolio domain — project models, schemas, CRUD, services, and routes for sho
 
 ```
 backend/app/models/project.py       # Project model (title, slug, description, url, tech stack)
-backend/app/schemas/project.py      # ProjectCreate, ProjectUpdate, ProjectPublic
+backend/app/schemas/project.py      # ProjectUpsert, ProjectPublic, ProjectsPublic
 backend/app/crud/project.py         # Project queries (by slug, list)
 backend/app/services/project.py     # ProjectService (create, get, list, sync from content)
 backend/app/api/routes/projects.py  # JSON API endpoints (/api/v1/projects)
