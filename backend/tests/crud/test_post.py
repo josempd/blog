@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlmodel import Session
 
 from app.crud.post import (
@@ -7,18 +9,29 @@ from app.crud.post import (
     get_tags_with_counts,
     upsert_post,
 )
+from app.schemas.post import PostUpsert
 from tests.utils.utils import random_lower_string
 
 
-def _post_data(**overrides: object) -> dict:
-    defaults = {
-        "title": f"Post {random_lower_string()}",
-        "slug": f"post-{random_lower_string()}",
-        "content_markdown": "# Hello",
-        "content_html": "<h1>Hello</h1>",
-    }
-    defaults.update(overrides)
-    return defaults
+def _post_data(
+    *,
+    title: str | None = None,
+    slug: str | None = None,
+    content_markdown: str = "# Hello",
+    content_html: str = "<h1>Hello</h1>",
+    published: bool = False,
+    excerpt: str | None = None,
+    published_at: datetime | None = None,
+) -> PostUpsert:
+    return PostUpsert(
+        title=title or f"Post {random_lower_string()}",
+        slug=slug or f"post-{random_lower_string()}",
+        content_markdown=content_markdown,
+        content_html=content_html,
+        published=published,
+        excerpt=excerpt,
+        published_at=published_at,
+    )
 
 
 def test_upsert_post_creates_new(db: Session) -> None:
@@ -26,8 +39,8 @@ def test_upsert_post_creates_new(db: Session) -> None:
     data = _post_data()
     post = upsert_post(session=db, source_path=source, data=data)
     assert post.id is not None
-    assert post.title == data["title"]
-    assert post.slug == data["slug"]
+    assert post.title == data.title
+    assert post.slug == data.slug
     assert post.source_path == source
     assert post.created_at is not None
     assert post.updated_at is None
@@ -51,9 +64,9 @@ def test_get_post_by_slug(db: Session) -> None:
     data = _post_data()
     upsert_post(session=db, source_path=source, data=data)
 
-    found = get_post_by_slug(session=db, slug=data["slug"])
+    found = get_post_by_slug(session=db, slug=data.slug)
     assert found is not None
-    assert found.slug == data["slug"]
+    assert found.slug == data.slug
 
 
 def test_get_post_by_slug_not_found(db: Session) -> None:
@@ -106,7 +119,7 @@ def test_get_tags_with_counts(db: Session) -> None:
     post_data = _post_data(published=True)
     post = upsert_post(
         session=db,
-        source_path=f"posts/{post_data['slug']}.md",
+        source_path=f"posts/{post_data.slug}.md",
         data=post_data,
     )
     post.tags.append(tag)

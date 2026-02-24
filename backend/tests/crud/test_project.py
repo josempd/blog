@@ -1,17 +1,25 @@
 from sqlmodel import Session
 
 from app.crud.project import get_project_by_slug, get_projects, upsert_project
+from app.schemas.project import ProjectUpsert
 from tests.utils.utils import random_lower_string
 
 
-def _project_data(**overrides: object) -> dict:
-    defaults = {
-        "title": f"Project {random_lower_string()}",
-        "slug": f"project-{random_lower_string()}",
-        "description": "A test project",
-    }
-    defaults.update(overrides)
-    return defaults
+def _project_data(
+    *,
+    title: str | None = None,
+    slug: str | None = None,
+    description: str = "A test project",
+    featured: bool = False,
+    sort_order: int = 0,
+) -> ProjectUpsert:
+    return ProjectUpsert(
+        title=title or f"Project {random_lower_string()}",
+        slug=slug or f"project-{random_lower_string()}",
+        description=description,
+        featured=featured,
+        sort_order=sort_order,
+    )
 
 
 def test_upsert_project_creates_new(db: Session) -> None:
@@ -19,8 +27,8 @@ def test_upsert_project_creates_new(db: Session) -> None:
     data = _project_data()
     project = upsert_project(session=db, source_path=source, data=data)
     assert project.id is not None
-    assert project.title == data["title"]
-    assert project.slug == data["slug"]
+    assert project.title == data.title
+    assert project.slug == data.slug
     assert project.source_path == source
     assert project.created_at is not None
     assert project.updated_at is None
@@ -47,7 +55,7 @@ def test_get_projects(db: Session) -> None:
     projects = get_projects(session=db)
     assert len(projects) >= 1
     slugs = [p.slug for p in projects]
-    assert data["slug"] in slugs
+    assert data.slug in slugs
 
 
 def test_get_projects_featured_only(db: Session) -> None:
@@ -76,9 +84,9 @@ def test_get_project_by_slug(db: Session) -> None:
     data = _project_data()
     upsert_project(session=db, source_path=source, data=data)
 
-    found = get_project_by_slug(session=db, slug=data["slug"])
+    found = get_project_by_slug(session=db, slug=data.slug)
     assert found is not None
-    assert found.slug == data["slug"]
+    assert found.slug == data.slug
 
 
 def test_get_project_by_slug_not_found(db: Session) -> None:

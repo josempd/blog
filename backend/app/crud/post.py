@@ -4,6 +4,7 @@ from sqlalchemy.orm import selectinload
 from sqlmodel import Session, col, func, select
 
 from app.models.post import Post, PostTagLink, Tag
+from app.schemas.post import PostUpsert
 
 
 def get_post_by_slug(*, session: Session, slug: str) -> Post | None:
@@ -39,18 +40,17 @@ def get_posts(
     return list(posts), count
 
 
-def upsert_post(*, session: Session, source_path: str, data: dict) -> Post:
+def upsert_post(*, session: Session, source_path: str, data: PostUpsert) -> Post:
     statement = select(Post).where(Post.source_path == source_path)
     existing = session.exec(statement).first()
     if existing:
-        for key, value in data.items():
-            setattr(existing, key, value)
+        existing.sqlmodel_update(data.model_dump())
         existing.updated_at = datetime.now(timezone.utc)
         session.add(existing)
         session.commit()
         session.refresh(existing)
         return existing
-    post = Post(source_path=source_path, **data)
+    post = Post(source_path=source_path, **data.model_dump())
     session.add(post)
     session.commit()
     session.refresh(post)
