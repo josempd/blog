@@ -4,7 +4,7 @@ from sqlalchemy.orm import selectinload
 from sqlmodel import Session, col, func, select
 
 from app.models.post import Post, PostTagLink, Tag
-from app.schemas.post import PostUpsert
+from app.schemas.post import PostUpsert, TagCreate
 
 
 def get_post_by_slug(*, session: Session, slug: str) -> Post | None:
@@ -57,12 +57,12 @@ def upsert_post(*, session: Session, source_path: str, data: PostUpsert) -> Post
     return post
 
 
-def get_or_create_tag(*, session: Session, name: str, slug: str) -> Tag:
-    statement = select(Tag).where(Tag.slug == slug)
+def get_or_create_tag(*, session: Session, data: TagCreate) -> Tag:
+    statement = select(Tag).where(Tag.slug == data.slug)
     existing = session.exec(statement).first()
     if existing:
         return existing
-    tag = Tag(name=name, slug=slug)
+    tag = Tag(name=data.name, slug=data.slug)
     session.add(tag)
     session.commit()
     session.refresh(tag)

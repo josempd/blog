@@ -9,7 +9,7 @@ from app.crud.post import (
     get_tags_with_counts,
     upsert_post,
 )
-from app.schemas.post import PostUpsert
+from app.schemas.post import PostUpsert, TagCreate
 from tests.utils.utils import random_lower_string
 
 
@@ -98,7 +98,7 @@ def test_get_posts_published_only(db: Session) -> None:
 def test_get_or_create_tag_creates(db: Session) -> None:
     name = f"Tag {random_lower_string()}"
     slug = f"tag-{random_lower_string()}"
-    tag = get_or_create_tag(session=db, name=name, slug=slug)
+    tag = get_or_create_tag(session=db, data=TagCreate(name=name, slug=slug))
     assert tag.id is not None
     assert tag.name == name
     assert tag.slug == slug
@@ -107,14 +107,16 @@ def test_get_or_create_tag_creates(db: Session) -> None:
 def test_get_or_create_tag_returns_existing(db: Session) -> None:
     name = f"Tag {random_lower_string()}"
     slug = f"tag-{random_lower_string()}"
-    tag1 = get_or_create_tag(session=db, name=name, slug=slug)
-    tag2 = get_or_create_tag(session=db, name=name, slug=slug)
+    tag1 = get_or_create_tag(session=db, data=TagCreate(name=name, slug=slug))
+    tag2 = get_or_create_tag(session=db, data=TagCreate(name=name, slug=slug))
     assert tag1.id == tag2.id
 
 
 def test_get_tags_with_counts(db: Session) -> None:
     tag_slug = f"tag-{random_lower_string()}"
-    tag = get_or_create_tag(session=db, name=f"Tag {tag_slug}", slug=tag_slug)
+    tag = get_or_create_tag(
+        session=db, data=TagCreate(name=f"Tag {tag_slug}", slug=tag_slug)
+    )
 
     post_data = _post_data(published=True)
     post = upsert_post(
@@ -134,7 +136,9 @@ def test_get_tags_with_counts(db: Session) -> None:
 
 def test_get_posts_filtered_by_tag(db: Session) -> None:
     tag_slug = f"filter-{random_lower_string()}"
-    tag = get_or_create_tag(session=db, name=f"Filter {tag_slug}", slug=tag_slug)
+    tag = get_or_create_tag(
+        session=db, data=TagCreate(name=f"Filter {tag_slug}", slug=tag_slug)
+    )
 
     tagged_slug = f"tagged-{random_lower_string()}"
     tagged_post = upsert_post(

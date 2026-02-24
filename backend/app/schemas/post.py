@@ -14,6 +14,11 @@ class PostUpsert(SQLModel):
     published_at: datetime | None = None
 
 
+class TagCreate(SQLModel):
+    name: str
+    slug: str
+
+
 class TagPublic(SQLModel):
     id: uuid.UUID
     name: str

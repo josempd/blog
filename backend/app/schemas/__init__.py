@@ -5,6 +5,7 @@ from app.schemas.post import (  # noqa: F401
     PostPublic,
     PostsPublic,
     PostUpsert,
+    TagCreate,
     TagPublic,
     TagWithCount,
 )
