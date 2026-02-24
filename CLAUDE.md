@@ -113,7 +113,8 @@ Current phase: see [PLAN.md](PLAN.md)
 
 ## Do NOT
 
-- Touch the auth system (users, login, security, JWT)
+- Change auth behavior (JWT algorithm, token format, password hashing, OAuth2 flow)
+- Modify `core/security.py` or `api/deps.py` auth dependencies without explicit approval
 - Put business logic in route handlers — that belongs in services
 - Put HTTP concepts (status codes, HTTPException) in services or CRUD
 - Use CDN for JS/CSS — vendor everything

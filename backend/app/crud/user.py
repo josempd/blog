@@ -1,8 +1,10 @@
-from sqlmodel import Session, select
+import uuid
+
+from sqlmodel import Session, col, func, select
 
 from app.core.security import get_password_hash, verify_password
 from app.models import User
-from app.schemas import UserCreate, UserUpdate
+from app.schemas import UserCreate, UserUpdate, UserUpdateMe
 
 # Dummy hash to use for timing attack prevention when user is not found
 # This is an Argon2 hash of a random password, used to ensure constant-time comparison
@@ -37,6 +39,41 @@ def get_user_by_email(*, session: Session, email: str) -> User | None:
     statement = select(User).where(User.email == email)
     session_user = session.exec(statement).first()
     return session_user
+
+
+def get_users(
+    *, session: Session, skip: int = 0, limit: int = 100
+) -> tuple[list[User], int]:
+    count = session.exec(select(func.count()).select_from(User)).one()
+    statement = (
+        select(User).order_by(col(User.created_at).desc()).offset(skip).limit(limit)
+    )
+    users = list(session.exec(statement).all())
+    return users, count
+
+
+def get_user_by_id(*, session: Session, user_id: uuid.UUID) -> User | None:
+    return session.get(User, user_id)
+
+
+def delete_user(*, session: Session, user: User) -> None:
+    session.delete(user)
+    session.commit()
+
+
+def update_user_me(*, session: Session, user: User, user_in: UserUpdateMe) -> User:
+    user_data = user_in.model_dump(exclude_unset=True)
+    user.sqlmodel_update(user_data)
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return user
+
+
+def update_password(*, session: Session, user: User, new_password: str) -> None:
+    user.hashed_password = get_password_hash(new_password)
+    session.add(user)
+    session.commit()
 
 
 def authenticate(*, session: Session, email: str, password: str) -> User | None:

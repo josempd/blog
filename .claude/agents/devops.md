@@ -68,7 +68,8 @@ COPY --from=islands /build/dist /app/app/static/dist/islands
 
 **`compose.override.yml`** (dev — auto-loaded):
 - `proxy`: Traefik 3.6, debug mode, ports 80 + 8090
-- `backend`: `fastapi run --reload`, volume mounts for live reload
+- `backend`: `fastapi run --reload`, bind mount `./backend:/app/backend` for bidirectional file access
+- `prestart`: bind mount `./backend:/app/backend` so host migrations are visible
 - `mailcatcher`: SMTP on 1025, UI on 1080
 
 **`compose.traefik.yml`** (production Traefik):
