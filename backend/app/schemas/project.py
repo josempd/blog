@@ -1,17 +1,18 @@
 import uuid
 from datetime import datetime
 
+from pydantic import Field
 from sqlmodel import SQLModel
 
 
 class ProjectUpsert(SQLModel):
-    title: str
-    slug: str
+    title: str = Field(max_length=255)
+    slug: str = Field(max_length=255)
     description: str | None = None
     content_markdown: str | None = None
     content_html: str | None = None
-    url: str | None = None
-    repo_url: str | None = None
+    url: str | None = Field(default=None, max_length=500)
+    repo_url: str | None = Field(default=None, max_length=500)
     featured: bool = False
     sort_order: int = 0
 

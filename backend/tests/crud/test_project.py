@@ -1,3 +1,5 @@
+import pytest
+from pydantic import ValidationError
 from sqlmodel import Session
 
 from app.crud.project import get_project_by_slug, get_projects, upsert_project
@@ -92,3 +94,23 @@ def test_get_project_by_slug(db: Session) -> None:
 def test_get_project_by_slug_not_found(db: Session) -> None:
     found = get_project_by_slug(session=db, slug="nonexistent-project")
     assert found is None
+
+
+def test_project_upsert_rejects_long_title() -> None:
+    with pytest.raises(ValidationError):
+        ProjectUpsert(title="x" * 256, slug="ok")
+
+
+def test_project_upsert_rejects_long_slug() -> None:
+    with pytest.raises(ValidationError):
+        ProjectUpsert(title="ok", slug="x" * 256)
+
+
+def test_project_upsert_rejects_long_url() -> None:
+    with pytest.raises(ValidationError):
+        ProjectUpsert(title="ok", slug="ok", url="x" * 501)
+
+
+def test_project_upsert_rejects_long_repo_url() -> None:
+    with pytest.raises(ValidationError):
+        ProjectUpsert(title="ok", slug="ok", repo_url="x" * 501)

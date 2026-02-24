@@ -1,5 +1,7 @@
 from datetime import datetime
 
+import pytest
+from pydantic import ValidationError
 from sqlmodel import Session
 
 from app.crud.post import (
@@ -132,6 +134,47 @@ def test_get_tags_with_counts(db: Session) -> None:
     tag_map = {t.slug: c for t, c in results}
     assert tag_slug in tag_map
     assert tag_map[tag_slug] >= 1
+
+
+def test_post_upsert_rejects_long_title() -> None:
+    with pytest.raises(ValidationError):
+        PostUpsert(
+            title="x" * 256,
+            slug="ok",
+            content_markdown="# Hi",
+            content_html="<h1>Hi</h1>",
+        )
+
+
+def test_post_upsert_rejects_long_slug() -> None:
+    with pytest.raises(ValidationError):
+        PostUpsert(
+            title="ok",
+            slug="x" * 256,
+            content_markdown="# Hi",
+            content_html="<h1>Hi</h1>",
+        )
+
+
+def test_post_upsert_rejects_long_excerpt() -> None:
+    with pytest.raises(ValidationError):
+        PostUpsert(
+            title="ok",
+            slug="ok",
+            excerpt="x" * 501,
+            content_markdown="# Hi",
+            content_html="<h1>Hi</h1>",
+        )
+
+
+def test_tag_create_rejects_long_name() -> None:
+    with pytest.raises(ValidationError):
+        TagCreate(name="x" * 101, slug="ok")
+
+
+def test_tag_create_rejects_long_slug() -> None:
+    with pytest.raises(ValidationError):
+        TagCreate(name="ok", slug="x" * 101)
 
 
 def test_get_posts_filtered_by_tag(db: Session) -> None:
