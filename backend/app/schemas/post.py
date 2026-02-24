@@ -4,6 +4,16 @@ from datetime import datetime
 from sqlmodel import SQLModel
 
 
+class PostUpsert(SQLModel):
+    title: str
+    slug: str
+    excerpt: str | None = None
+    content_markdown: str
+    content_html: str
+    published: bool = False
+    published_at: datetime | None = None
+
+
 class TagPublic(SQLModel):
     id: uuid.UUID
     name: str
