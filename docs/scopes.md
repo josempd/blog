@@ -44,6 +44,8 @@ backend/app/models/user.py                 → auth
 backend/app/schemas/user.py                → auth
 backend/app/schemas/auth.py                → auth
 backend/app/crud/user.py                   → auth
+backend/app/services/user.py               → auth
+backend/app/services/auth.py               → auth
 backend/app/api/routes/login.py            → auth
 backend/app/api/routes/users.py            → auth
 backend/app/api/routes/private.py          → auth
