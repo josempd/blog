@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime
 
-from pydantic import Field
-from sqlmodel import SQLModel
+from pydantic import BaseModel, ConfigDict
+from sqlmodel import Field, SQLModel
 
 
 class ProjectUpsert(SQLModel):
@@ -17,7 +17,9 @@ class ProjectUpsert(SQLModel):
     sort_order: int = 0
 
 
-class ProjectPublic(SQLModel):
+class ProjectPublic(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: uuid.UUID
     title: str
     slug: str
@@ -30,6 +32,6 @@ class ProjectPublic(SQLModel):
     updated_at: datetime | None = None
 
 
-class ProjectsPublic(SQLModel):
+class ProjectsPublic(BaseModel):
     data: list[ProjectPublic]
     count: int
