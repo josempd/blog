@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime
 
-from pydantic import Field
-from sqlmodel import SQLModel
+from pydantic import BaseModel, ConfigDict
+from sqlmodel import Field, SQLModel
 
 
 class PostUpsert(SQLModel):
@@ -20,7 +20,9 @@ class TagCreate(SQLModel):
     slug: str = Field(max_length=100)
 
 
-class TagPublic(SQLModel):
+class TagPublic(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: uuid.UUID
     name: str
     slug: str
@@ -30,7 +32,9 @@ class TagWithCount(TagPublic):
     post_count: int
 
 
-class PostPublic(SQLModel):
+class PostPublic(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: uuid.UUID
     title: str
     slug: str
@@ -46,6 +50,6 @@ class PostDetail(PostPublic):
     content_html: str
 
 
-class PostsPublic(SQLModel):
+class PostsPublic(BaseModel):
     data: list[PostPublic]
     count: int
