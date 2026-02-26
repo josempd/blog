@@ -1,0 +1,10 @@
+{% if posts %}
+    {% for post in posts %}
+        {% include "partials/post_card.html" %}
+    {% endfor %}
+    {% include "partials/pagination.html" %}
+{% elif active_tag %}
+    <p class="empty-state">No posts with this tag.</p>
+{% else %}
+    <p class="empty-state">No posts found.</p>
+{% endif %}

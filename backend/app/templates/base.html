@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{{ site_title }}{% endblock %}</title>
+    <meta name="description" content="{% block description %}{{ site_description }}{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}{{ site_title }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ site_description }}{% endblock %}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <link rel="alternate" type="application/rss+xml" title="{{ site_title }}" href="/feed.xml">
+    <link rel="stylesheet" href="/static/css/style.css">
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    {% include "partials/header.html" %}
+    <main id="main" class="container">
+        {% block content %}{% endblock %}
+    </main>
+    {% include "partials/footer.html" %}
+    <script src="/static/js/htmx.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

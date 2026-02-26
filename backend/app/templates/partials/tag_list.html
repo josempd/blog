@@ -1,0 +1,14 @@
+<div class="tag-list">
+    <a href="/blog"
+       hx-get="/blog"
+       hx-target="#post-list"
+       hx-push-url="true"
+       class="tag{% if not active_tag %} tag--active{% endif %}">All</a>
+    {% for tag, count in tags %}
+    <a href="/blog?tag={{ tag.slug }}"
+       hx-get="/blog?tag={{ tag.slug }}"
+       hx-target="#post-list"
+       hx-push-url="true"
+       class="tag{% if active_tag == tag.slug %} tag--active{% endif %}">{{ tag.name }} ({{ count }})</a>
+    {% endfor %}
+</div>

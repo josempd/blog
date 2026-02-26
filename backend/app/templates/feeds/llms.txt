@@ -1,0 +1,15 @@
+# {{ site_title }}
+
+> {{ site_description }}
+
+## Blog Posts
+
+{% for post in posts %}
+- [{{ post.title }}]({{ base_url }}blog/{{ post.slug }})
+{% endfor %}
+
+## Projects
+
+{% for project in projects %}
+- [{{ project.title }}]({{ base_url }}projects){% if project.description %}: {{ project.description }}{% endif %}
+{% endfor %}
