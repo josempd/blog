@@ -143,3 +143,26 @@ def test_list_tags_excludes_unpublished_posts(db: Session) -> None:
     tag_map = {t.slug: count for t, count in results}
     assert tag_slug not in tag_map
     _cleanup(db)
+
+
+def test_search_published_posts(db: Session) -> None:
+    _cleanup(db)
+    _make_post(db, published=True, slug="search-hello", title="Hello World Post")
+    _make_post(db, published=True, slug="search-goodbye", title="Goodbye World Post")
+    _make_post(db, published=False, slug="search-draft", title="Hello Draft")
+
+    results = blog_service.search_published_posts(session=db, query="Hello")
+    slugs = [p.slug for p in results]
+    assert "search-hello" in slugs
+    assert "search-draft" not in slugs  # unpublished
+    _cleanup(db)
+
+
+def test_search_empty_query(db: Session) -> None:
+    results = blog_service.search_published_posts(session=db, query="")
+    assert results == []
+
+
+def test_search_whitespace_query(db: Session) -> None:
+    results = blog_service.search_published_posts(session=db, query="   ")
+    assert results == []

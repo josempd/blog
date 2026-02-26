@@ -1,6 +1,6 @@
 """Unit tests for app.content.renderer.render_markdown."""
 
-from app.content.renderer import render_markdown
+from app.content.renderer import TocEntry, extract_toc, render_markdown
 
 
 def test_plain_text_renders_to_paragraph() -> None:
@@ -91,3 +91,43 @@ def test_multiple_headings_each_get_id() -> None:
 def test_returns_string_type() -> None:
     result = render_markdown("Some text")
     assert isinstance(result, str)
+
+
+# ---------------------------------------------------------------------------
+# extract_toc
+# ---------------------------------------------------------------------------
+
+
+def test_extract_toc_from_html() -> None:
+    html = render_markdown("## Introduction\n\n### Details\n\n## Conclusion")
+    toc = extract_toc(html)
+    assert len(toc) == 3
+    assert toc[0] == TocEntry(level=2, id="introduction", text="Introduction")
+    assert toc[1] == TocEntry(level=3, id="details", text="Details")
+    assert toc[2] == TocEntry(level=2, id="conclusion", text="Conclusion")
+
+
+def test_extract_toc_empty_html() -> None:
+    toc = extract_toc("")
+    assert toc == []
+
+
+def test_extract_toc_no_headings() -> None:
+    html = render_markdown("Just a paragraph.\n\nAnother paragraph.")
+    toc = extract_toc(html)
+    assert toc == []
+
+
+def test_extract_toc_skips_h1() -> None:
+    html = render_markdown("# Title\n\n## Section")
+    toc = extract_toc(html)
+    assert len(toc) == 1
+    assert toc[0].level == 2
+    assert toc[0].text == "Section"
+
+
+def test_extract_toc_strips_inline_html() -> None:
+    html = render_markdown("## Hello **World**")
+    toc = extract_toc(html)
+    assert len(toc) == 1
+    assert toc[0].text == "Hello World"

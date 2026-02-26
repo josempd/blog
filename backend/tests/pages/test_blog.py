@@ -133,6 +133,38 @@ def test_blog_htmx_partial(client: TestClient) -> None:
     assert "Published Post" in response.text
 
 
+def test_search_page(client: TestClient) -> None:
+    response = client.get("/search?q=Published")
+    assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
+    assert "Published Post" in response.text
+
+
+def test_search_htmx_partial(client: TestClient) -> None:
+    response = client.get("/search?q=Published", headers={"HX-Request": "true"})
+    assert response.status_code == 200
+    assert "<html" not in response.text
+    assert "Published Post" in response.text
+
+
+def test_search_no_results(client: TestClient) -> None:
+    response = client.get("/search?q=xyznonexistent")
+    assert response.status_code == 200
+    assert "No results" in response.text
+
+
+def test_search_empty_query(client: TestClient) -> None:
+    response = client.get("/search")
+    assert response.status_code == 200
+    assert "Search" in response.text
+
+
+def test_search_excludes_drafts(client: TestClient) -> None:
+    response = client.get("/search?q=Draft")
+    assert response.status_code == 200
+    assert "Draft Post" not in response.text
+
+
 def test_blog_empty_state(client: TestClient, db: Session) -> None:
     _cleanup(db)
     response = client.get("/blog")

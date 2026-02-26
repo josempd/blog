@@ -16,6 +16,7 @@ from app.content.loader import (
     load_project,
     load_projects,
 )
+from app.content.renderer import TocEntry
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -218,6 +219,31 @@ def test_load_post_no_date_in_filename_published_at_none(tmp_path: Path) -> None
     post = load_post(path, tmp_path)
     assert post.published_at is None
     assert post.slug == "undated-post"
+
+
+def test_load_post_includes_toc(tmp_path: Path) -> None:
+    posts_dir = tmp_path / "posts"
+    path = _write_md(
+        posts_dir,
+        "2024-01-01-toc-post.md",
+        "---\ntitle: ToC Post\n---\n## First Section\n\n### Subsection\n\n## Second Section",
+    )
+    post = load_post(path, tmp_path)
+    assert len(post.toc) == 3
+    assert post.toc[0] == TocEntry(level=2, id="first-section", text="First Section")
+    assert post.toc[1] == TocEntry(level=3, id="subsection", text="Subsection")
+    assert post.toc[2] == TocEntry(level=2, id="second-section", text="Second Section")
+
+
+def test_load_post_no_headings_empty_toc(tmp_path: Path) -> None:
+    posts_dir = tmp_path / "posts"
+    path = _write_md(
+        posts_dir,
+        "2024-01-01-no-headings.md",
+        "---\ntitle: No Headings\n---\nJust a paragraph.",
+    )
+    post = load_post(path, tmp_path)
+    assert post.toc == []
 
 
 # ---------------------------------------------------------------------------
