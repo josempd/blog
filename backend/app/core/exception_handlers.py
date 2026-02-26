@@ -11,12 +11,15 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.responses import Response
 
 from app.core.exceptions import AppError, ProblemDetail
 
 logger = structlog.get_logger(__name__)
 
 _PROBLEM_CONTENT_TYPE = "application/problem+json"
+
+_HTML_SKIP_PREFIXES = ("/api/", "/docs", "/redoc", "/openapi.json")
 
 
 # ---------------------------------------------------------------------------
@@ -26,6 +29,11 @@ _PROBLEM_CONTENT_TYPE = "application/problem+json"
 
 def _trace_id_from_request(request: Request) -> str | None:
     return getattr(request.state, "trace_id", None)
+
+
+def _wants_html(request: Request) -> bool:
+    path = request.url.path
+    return not any(path.startswith(prefix) for prefix in _HTML_SKIP_PREFIXES)
 
 
 def _problem_response(
@@ -39,12 +47,19 @@ def _problem_response(
     )
 
 
+def _html_error_response(request: Request, status_code: int) -> Response:
+    from app.pages.deps import templates
+
+    template = "errors/404.html" if status_code == 404 else "errors/500.html"
+    return templates.TemplateResponse(request, template, status_code=status_code)
+
+
 # ---------------------------------------------------------------------------
 # Handlers
 # ---------------------------------------------------------------------------
 
 
-async def _handle_app_error(request: Request, exc: AppError) -> JSONResponse:
+async def _handle_app_error(request: Request, exc: AppError) -> Response:
     trace_id = _trace_id_from_request(request)
     problem = exc.to_problem_detail(trace_id=trace_id)
     logger.warning(
@@ -54,12 +69,14 @@ async def _handle_app_error(request: Request, exc: AppError) -> JSONResponse:
         trace_id=trace_id,
         exc_type=type(exc).__name__,
     )
+    if _wants_html(request):
+        return _html_error_response(request, exc.status_code)
     return _problem_response(problem, headers=exc.headers)
 
 
 async def _handle_starlette_http(
     request: Request, exc: StarletteHTTPException
-) -> JSONResponse:
+) -> Response:
     trace_id = _trace_id_from_request(request)
     problem = ProblemDetail(
         title=exc.detail if isinstance(exc.detail, str) else "HTTP Error",
@@ -73,6 +90,8 @@ async def _handle_starlette_http(
         detail=exc.detail,
         trace_id=trace_id,
     )
+    if _wants_html(request):
+        return _html_error_response(request, exc.status_code)
     headers = getattr(exc, "headers", None)
     return _problem_response(problem, headers=headers)
 
@@ -97,7 +116,7 @@ async def _handle_validation_error(
     return _problem_response(problem)
 
 
-async def _handle_unhandled(request: Request, exc: Exception) -> JSONResponse:
+async def _handle_unhandled(request: Request, exc: Exception) -> Response:
     trace_id = _trace_id_from_request(request)
     logger.exception(
         "unhandled_error",
@@ -110,6 +129,8 @@ async def _handle_unhandled(request: Request, exc: Exception) -> JSONResponse:
         detail="An unexpected error occurred",
         trace_id=trace_id,
     )
+    if _wants_html(request):
+        return _html_error_response(request, 500)
     return _problem_response(problem)
 
 
