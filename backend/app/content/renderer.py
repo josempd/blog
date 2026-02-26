@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 
 import mistune
 from mistune import HTMLRenderer
@@ -57,3 +58,35 @@ def render_markdown(text: str) -> str:
     """
     result = _md(text)
     return str(result) if result is not None else ""
+
+
+_TOC_RE = re.compile(r'<h([2-6]) id="([^"]+)">(.*?)</h\1>')
+
+
+@dataclass(slots=True)
+class TocEntry:
+    level: int
+    id: str
+    text: str
+
+
+def extract_toc(html: str) -> list[TocEntry]:
+    """Extract table of contents entries from rendered HTML.
+
+    Parses h2–h6 headings with id attributes from the rendered HTML.
+    h1 is excluded as it represents the post title, not a ToC entry.
+    Inline HTML tags (like ``<code>``, ``<em>``) are stripped from the text.
+
+    Args:
+        html: Rendered HTML string produced by ``render_markdown``.
+
+    Returns:
+        Ordered list of ``TocEntry`` objects, one per matched heading.
+    """
+    entries = []
+    for match in _TOC_RE.finditer(html):
+        level = int(match.group(1))
+        anchor = match.group(2)
+        text = re.sub(r"<[^>]+>", "", match.group(3))
+        entries.append(TocEntry(level=level, id=anchor, text=text))
+    return entries

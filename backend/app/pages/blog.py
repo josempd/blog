@@ -58,11 +58,22 @@ async def blog_list(
     return templates.TemplateResponse(request, "pages/blog_list.html", context)
 
 
+@router.get("/search")
+async def search(request: Request, session: SessionDep, q: str = ""):
+    results = blog_service.search_published_posts(session=session, query=q, limit=20)
+    context = {"request": request, "posts": results, "query": q}
+    if is_htmx_request(request):
+        return templates.TemplateResponse(
+            request, "pages/search_results_partial.html", context
+        )
+    return templates.TemplateResponse(request, "pages/search.html", context)
+
+
 @router.get("/blog/{slug}")
 async def blog_detail(request: Request, session: SessionDep, slug: str):
-    post = blog_service.get_published_post(session=session, slug=slug)
+    post, toc = blog_service.get_published_post_with_toc(session=session, slug=slug)
     return templates.TemplateResponse(
         request,
         "pages/blog_post.html",
-        {"post": post},
+        {"post": post, "toc": toc},
     )

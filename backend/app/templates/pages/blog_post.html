@@ -17,6 +17,19 @@
         </div>
     </header>
 
+    {% if toc and toc | length > 1 %}
+    <nav class="post-toc" aria-label="Table of contents">
+        <h2>Contents</h2>
+        <ol>
+            {% for entry in toc %}
+            <li class="toc-level-{{ entry.level }}">
+                <a href="#{{ entry.id }}">{{ entry.text }}</a>
+            </li>
+            {% endfor %}
+        </ol>
+    </nav>
+    {% endif %}
+
     <div class="prose post-body">
         {{ post.content_html | safe }}
     </div>

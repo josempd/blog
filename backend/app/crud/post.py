@@ -82,6 +82,26 @@ def delete_posts_not_in(*, session: Session, source_paths: set[str]) -> int:
     return deleted
 
 
+def search_posts(
+    *,
+    session: Session,
+    query: str,
+    published_only: bool = True,
+    limit: int = 20,
+) -> list[Post]:
+    eager = selectinload(Post.tags)  # type: ignore[arg-type]
+    statement = select(Post).options(eager)
+    if published_only:
+        statement = statement.where(Post.published == True)  # noqa: E712
+    escaped = query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    pattern = f"%{escaped}%"
+    statement = statement.where(
+        (Post.title.ilike(pattern)) | (Post.excerpt.ilike(pattern))  # type: ignore[union-attr]
+    )
+    statement = statement.order_by(col(Post.published_at).desc()).limit(limit)
+    return list(session.exec(statement).all())
+
+
 def get_tags_with_counts(
     *, session: Session, published_only: bool = True
 ) -> list[tuple[Tag, int]]:

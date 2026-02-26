@@ -13,7 +13,7 @@ from typing import Any
 
 from app.content import slugify
 from app.content.frontmatter import parse_frontmatter
-from app.content.renderer import render_markdown
+from app.content.renderer import TocEntry, extract_toc, render_markdown
 
 # Matches filenames like 2024-01-15-my-post-slug.md
 _DATE_SLUG_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})-(.+)$")
@@ -63,6 +63,7 @@ class ParsedPost:
     published: bool
     published_at: datetime | None
     tags: list[str]
+    toc: list[TocEntry]
 
 
 @dataclass(slots=True)
@@ -128,16 +129,18 @@ def load_post(file_path: Path, content_dir: Path) -> ParsedPost:
     elif filename_date_str:
         published_at = _to_utc_datetime(date.fromisoformat(filename_date_str))
 
+    html = render_markdown(body)
     return ParsedPost(
         source_path=_relative_source(file_path, content_dir),
         title=str(meta["title"]),
         slug=slug,
         excerpt=str(meta["excerpt"]) if "excerpt" in meta else None,
         content_markdown=body,
-        content_html=render_markdown(body),
+        content_html=html,
         published=bool(meta.get("published", False)),
         published_at=published_at,
         tags=_parse_tags(meta.get("tags")),
+        toc=extract_toc(html),
     )
 
 
