@@ -9,6 +9,14 @@
     <meta property="og:description" content="{% block og_description %}{{ site_description }}{% endblock %}">
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
     <link rel="alternate" type="application/rss+xml" title="{{ site_title }}" href="/feed.xml">
+    <script>
+    (function(){
+      var t = localStorage.getItem('theme');
+      if (t) document.documentElement.setAttribute('data-theme', t);
+      else if (window.matchMedia('(prefers-color-scheme: dark)').matches)
+        document.documentElement.setAttribute('data-theme', 'dark');
+    })();
+    </script>
     <link rel="stylesheet" href="/static/css/style.css">
     {% block head_extra %}{% endblock %}
 </head>
@@ -20,6 +28,11 @@
     </main>
     {% include "partials/footer.html" %}
     <script src="/static/js/htmx.min.js"></script>
+    <script src="/static/js/theme.js"></script>
+    {% set search_js = island_asset("SearchDialog") %}
+    {% if search_js %}
+    <script type="module" src="{{ search_js }}"></script>
+    {% endif %}
     {% block scripts %}{% endblock %}
 </body>
 </html>

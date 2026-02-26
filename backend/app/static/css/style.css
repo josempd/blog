@@ -66,6 +66,34 @@ video {
 }
 
 /* ==========================================================================
+   Dark Mode Tokens
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #1a1a1a;
+    --color-text: #e5e7eb;
+    --color-text-muted: #9ca3af;
+    --color-border: #374151;
+    --color-accent: #60a5fa;
+    --color-accent-hover: #93c5fd;
+    --color-code-bg: #1f2937;
+    --color-surface: #111827;
+  }
+}
+
+[data-theme="dark"] {
+  --color-bg: #1a1a1a;
+  --color-text: #e5e7eb;
+  --color-text-muted: #9ca3af;
+  --color-border: #374151;
+  --color-accent: #60a5fa;
+  --color-accent-hover: #93c5fd;
+  --color-code-bg: #1f2937;
+  --color-surface: #111827;
+}
+
+/* ==========================================================================
    Typography
    ========================================================================== */
 
@@ -555,6 +583,184 @@ nav[aria-label="Main navigation"] {
 .highlight .il  { color: #666666 }
 
 /* ==========================================================================
+   Dark Mode Pygments — Monokai
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .highlight .hll { background-color: #49483e }
+  :root:not([data-theme="light"]) .highlight .c,
+  :root:not([data-theme="light"]) .highlight .cm,
+  :root:not([data-theme="light"]) .highlight .c1,
+  :root:not([data-theme="light"]) .highlight .cs  { color: #75715e; font-style: italic }
+  :root:not([data-theme="light"]) .highlight .cp,
+  :root:not([data-theme="light"]) .highlight .go,
+  :root:not([data-theme="light"]) .highlight .gt,
+  :root:not([data-theme="light"]) .highlight .gh,
+  :root:not([data-theme="light"]) .highlight .gu  { color: #75715e }
+  :root:not([data-theme="light"]) .highlight .k,
+  :root:not([data-theme="light"]) .highlight .kc,
+  :root:not([data-theme="light"]) .highlight .kd,
+  :root:not([data-theme="light"]) .highlight .kn,
+  :root:not([data-theme="light"]) .highlight .kr  { color: #66d9ef; font-weight: bold }
+  :root:not([data-theme="light"]) .highlight .kp,
+  :root:not([data-theme="light"]) .highlight .kt,
+  :root:not([data-theme="light"]) .highlight .no  { color: #66d9ef }
+  :root:not([data-theme="light"]) .highlight .gp  { color: #66d9ef; font-weight: bold }
+  :root:not([data-theme="light"]) .highlight .o,
+  :root:not([data-theme="light"]) .highlight .gd,
+  :root:not([data-theme="light"]) .highlight .nt  { color: #f92672 }
+  :root:not([data-theme="light"]) .highlight .nt  { font-weight: bold }
+  :root:not([data-theme="light"]) .highlight .ow  { color: #f92672; font-weight: bold }
+  :root:not([data-theme="light"]) .highlight .gi,
+  :root:not([data-theme="light"]) .highlight .na,
+  :root:not([data-theme="light"]) .highlight .nd,
+  :root:not([data-theme="light"]) .highlight .nf,
+  :root:not([data-theme="light"]) .highlight .fm  { color: #a6e22e }
+  :root:not([data-theme="light"]) .highlight .nc,
+  :root:not([data-theme="light"]) .highlight .ne  { color: #a6e22e; font-weight: bold }
+  :root:not([data-theme="light"]) .highlight .ge  { font-style: italic }
+  :root:not([data-theme="light"]) .highlight .gs  { font-weight: bold }
+  :root:not([data-theme="light"]) .highlight .m,
+  :root:not([data-theme="light"]) .highlight .mb,
+  :root:not([data-theme="light"]) .highlight .mf,
+  :root:not([data-theme="light"]) .highlight .mh,
+  :root:not([data-theme="light"]) .highlight .mi,
+  :root:not([data-theme="light"]) .highlight .mo,
+  :root:not([data-theme="light"]) .highlight .il  { color: #ae81ff }
+  :root:not([data-theme="light"]) .highlight .se  { color: #ae81ff; font-weight: bold }
+  :root:not([data-theme="light"]) .highlight .s,
+  :root:not([data-theme="light"]) .highlight .sa,
+  :root:not([data-theme="light"]) .highlight .sb,
+  :root:not([data-theme="light"]) .highlight .sc,
+  :root:not([data-theme="light"]) .highlight .dl,
+  :root:not([data-theme="light"]) .highlight .s2,
+  :root:not([data-theme="light"]) .highlight .sh,
+  :root:not([data-theme="light"]) .highlight .s1,
+  :root:not([data-theme="light"]) .highlight .ss,
+  :root:not([data-theme="light"]) .highlight .sx,
+  :root:not([data-theme="light"]) .highlight .sr  { color: #e6db74 }
+  :root:not([data-theme="light"]) .highlight .sd  { color: #e6db74; font-style: italic }
+  :root:not([data-theme="light"]) .highlight .si  { color: #e6db74; font-weight: bold }
+  :root:not([data-theme="light"]) .highlight .nb,
+  :root:not([data-theme="light"]) .highlight .ni,
+  :root:not([data-theme="light"]) .highlight .nl,
+  :root:not([data-theme="light"]) .highlight .nv,
+  :root:not([data-theme="light"]) .highlight .vc,
+  :root:not([data-theme="light"]) .highlight .vg,
+  :root:not([data-theme="light"]) .highlight .vi,
+  :root:not([data-theme="light"]) .highlight .vm,
+  :root:not([data-theme="light"]) .highlight .w,
+  :root:not([data-theme="light"]) .highlight .bp  { color: #f8f8f2 }
+  :root:not([data-theme="light"]) .highlight .ni,
+  :root:not([data-theme="light"]) .highlight .nn  { font-weight: bold }
+}
+
+[data-theme="dark"] .highlight .hll { background-color: #49483e }
+[data-theme="dark"] .highlight .c,
+[data-theme="dark"] .highlight .cm,
+[data-theme="dark"] .highlight .c1,
+[data-theme="dark"] .highlight .cs  { color: #75715e; font-style: italic }
+[data-theme="dark"] .highlight .cp,
+[data-theme="dark"] .highlight .go,
+[data-theme="dark"] .highlight .gt,
+[data-theme="dark"] .highlight .gh,
+[data-theme="dark"] .highlight .gu  { color: #75715e }
+[data-theme="dark"] .highlight .k,
+[data-theme="dark"] .highlight .kc,
+[data-theme="dark"] .highlight .kd,
+[data-theme="dark"] .highlight .kn,
+[data-theme="dark"] .highlight .kr  { color: #66d9ef; font-weight: bold }
+[data-theme="dark"] .highlight .kp,
+[data-theme="dark"] .highlight .kt,
+[data-theme="dark"] .highlight .no  { color: #66d9ef }
+[data-theme="dark"] .highlight .gp  { color: #66d9ef; font-weight: bold }
+[data-theme="dark"] .highlight .o,
+[data-theme="dark"] .highlight .gd  { color: #f92672 }
+[data-theme="dark"] .highlight .nt  { color: #f92672; font-weight: bold }
+[data-theme="dark"] .highlight .ow  { color: #f92672; font-weight: bold }
+[data-theme="dark"] .highlight .gi,
+[data-theme="dark"] .highlight .na,
+[data-theme="dark"] .highlight .nd,
+[data-theme="dark"] .highlight .nf,
+[data-theme="dark"] .highlight .fm  { color: #a6e22e }
+[data-theme="dark"] .highlight .nc,
+[data-theme="dark"] .highlight .ne  { color: #a6e22e; font-weight: bold }
+[data-theme="dark"] .highlight .ge  { font-style: italic }
+[data-theme="dark"] .highlight .gs  { font-weight: bold }
+[data-theme="dark"] .highlight .m,
+[data-theme="dark"] .highlight .mb,
+[data-theme="dark"] .highlight .mf,
+[data-theme="dark"] .highlight .mh,
+[data-theme="dark"] .highlight .mi,
+[data-theme="dark"] .highlight .mo,
+[data-theme="dark"] .highlight .il  { color: #ae81ff }
+[data-theme="dark"] .highlight .se  { color: #ae81ff; font-weight: bold }
+[data-theme="dark"] .highlight .s,
+[data-theme="dark"] .highlight .sa,
+[data-theme="dark"] .highlight .sb,
+[data-theme="dark"] .highlight .sc,
+[data-theme="dark"] .highlight .dl,
+[data-theme="dark"] .highlight .s2,
+[data-theme="dark"] .highlight .sh,
+[data-theme="dark"] .highlight .s1,
+[data-theme="dark"] .highlight .ss,
+[data-theme="dark"] .highlight .sx,
+[data-theme="dark"] .highlight .sr  { color: #e6db74 }
+[data-theme="dark"] .highlight .sd  { color: #e6db74; font-style: italic }
+[data-theme="dark"] .highlight .si  { color: #e6db74; font-weight: bold }
+[data-theme="dark"] .highlight .nb,
+[data-theme="dark"] .highlight .nl,
+[data-theme="dark"] .highlight .nv,
+[data-theme="dark"] .highlight .vc,
+[data-theme="dark"] .highlight .vg,
+[data-theme="dark"] .highlight .vi,
+[data-theme="dark"] .highlight .vm,
+[data-theme="dark"] .highlight .w,
+[data-theme="dark"] .highlight .bp  { color: #f8f8f2 }
+[data-theme="dark"] .highlight .ni,
+[data-theme="dark"] .highlight .nn  { color: #f8f8f2; font-weight: bold }
+
+/* ==========================================================================
+   Theme Toggle Button
+   ========================================================================== */
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: color var(--duration-fast) ease,
+              border-color var(--duration-fast) ease;
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.theme-toggle .icon-sun { display: none; }
+.theme-toggle .icon-moon { display: block; }
+
+[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle .icon-sun { display: block; }
+  :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: none; }
+}
+
+/* ==========================================================================
    HTMX Indicator
    ========================================================================== */
 
@@ -612,6 +818,223 @@ nav[aria-label="Main navigation"] {
   padding: var(--space-7) var(--space-4);
   color: var(--color-text-muted);
   font-size: var(--text-base);
+}
+
+/* ==========================================================================
+   Table of Contents
+   ========================================================================== */
+
+.post-toc {
+  margin-bottom: var(--space-5);
+  padding: var(--space-4);
+  border-left: 3px solid var(--color-accent);
+  background-color: var(--color-surface);
+  border-radius: var(--radius);
+}
+
+.post-toc h2 {
+  font-size: var(--text-base);
+  margin-bottom: var(--space-3);
+}
+
+.post-toc ol {
+  list-style: none;
+  padding-left: 0;
+}
+
+.post-toc li {
+  margin-bottom: var(--space-1);
+}
+
+.post-toc a {
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: var(--text-sm);
+}
+
+.post-toc a:hover {
+  color: var(--color-accent);
+  text-decoration: underline;
+}
+
+.post-toc a:visited {
+  color: var(--color-text);
+}
+
+.toc-level-3 { padding-left: var(--space-4); }
+.toc-level-4 { padding-left: var(--space-6); }
+.toc-level-5 { padding-left: calc(var(--space-6) + var(--space-2)); }
+.toc-level-6 { padding-left: calc(var(--space-6) + var(--space-4)); }
+
+/* ==========================================================================
+   Search
+   ========================================================================== */
+
+.search-page {
+  max-width: var(--prose-width);
+}
+
+.search-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-base);
+  font-family: var(--font-body);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  margin-bottom: var(--space-4);
+}
+
+.search-input:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-color: var(--color-accent);
+}
+
+.search-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* ==========================================================================
+   Search Dialog (Svelte Island)
+   ========================================================================== */
+
+.search-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-family: var(--font-body);
+  transition: color var(--duration-fast) ease,
+              border-color var(--duration-fast) ease;
+}
+
+.search-trigger:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.search-trigger:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.search-shortcut kbd {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.nav-search {
+  display: inline-flex;
+}
+
+.search-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+}
+
+.search-dialog {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 36rem;
+  max-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-left: var(--space-3);
+  margin-right: var(--space-3);
+}
+
+.search-dialog-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.search-dialog-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: var(--text-base);
+  font-family: var(--font-body);
+  color: var(--color-text);
+  outline: none;
+  padding: var(--space-1) 0;
+}
+
+.search-dialog-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.search-dialog-close {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  border-radius: var(--radius);
+  transition: color var(--duration-fast) ease;
+}
+
+.search-dialog-close:hover {
+  color: var(--color-text);
+}
+
+.search-dialog-close:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.search-dialog-results {
+  overflow-y: auto;
+  padding: var(--space-3) var(--space-4);
+}
+
+.search-dialog-results .post-card {
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.search-dialog-results .post-card:first-child {
+  padding-top: 0;
+}
+
+.search-dialog-results .post-card:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.search-dialog-status {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-align: center;
+  padding: var(--space-4) 0;
+  margin: 0;
 }
 
 /* ==========================================================================
