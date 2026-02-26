@@ -32,6 +32,10 @@ class ProjectPublic(BaseModel):
     updated_at: datetime | None = None
 
 
+class ProjectDetail(ProjectPublic):
+    content_html: str | None = None
+
+
 class ProjectsPublic(BaseModel):
     data: list[ProjectPublic]
     count: int
