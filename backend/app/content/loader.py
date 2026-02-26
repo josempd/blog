@@ -19,8 +19,13 @@ from app.content.renderer import render_markdown
 _DATE_SLUG_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})-(.+)$")
 
 
-def _to_utc_datetime(value: date | datetime) -> datetime:
-    """Coerce a date or datetime from PyYAML into an aware UTC datetime."""
+def _to_utc_datetime(value: str | date | datetime) -> datetime:
+    """Coerce a date, datetime, or ISO-format string into an aware UTC datetime."""
+    if isinstance(value, str):
+        parsed = datetime.fromisoformat(value)
+        if parsed.tzinfo is None:
+            return parsed.replace(tzinfo=timezone.utc)
+        return parsed
     if isinstance(value, datetime):
         if value.tzinfo is None:
             return value.replace(tzinfo=timezone.utc)

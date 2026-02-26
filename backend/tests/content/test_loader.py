@@ -186,6 +186,28 @@ def test_load_post_content_html_is_rendered(tmp_path: Path) -> None:
     assert "<p>" in post.content_html
 
 
+def test_load_post_string_date_in_frontmatter(tmp_path: Path) -> None:
+    posts_dir = tmp_path / "posts"
+    path = _write_md(
+        posts_dir,
+        "2024-01-01-string-date.md",
+        '---\ntitle: String Date Post\ndate: "2024-06-15"\n---\nContent.',
+    )
+    post = load_post(path, tmp_path)
+    assert post.published_at == datetime(2024, 6, 15, tzinfo=timezone.utc)
+
+
+def test_load_post_string_datetime_in_frontmatter(tmp_path: Path) -> None:
+    posts_dir = tmp_path / "posts"
+    path = _write_md(
+        posts_dir,
+        "2024-01-01-string-datetime.md",
+        '---\ntitle: String Datetime Post\ndate: "2024-06-15T10:30:00"\n---\nContent.',
+    )
+    post = load_post(path, tmp_path)
+    assert post.published_at == datetime(2024, 6, 15, 10, 30, tzinfo=timezone.utc)
+
+
 def test_load_post_no_date_in_filename_published_at_none(tmp_path: Path) -> None:
     posts_dir = tmp_path / "posts"
     path = _write_md(
