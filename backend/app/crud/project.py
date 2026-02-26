@@ -1,7 +1,6 @@
-from datetime import datetime, timezone
-
 from sqlmodel import Session, col, func, select
 
+from app.models.base import get_datetime_utc
 from app.models.project import Project
 from app.schemas.project import ProjectUpsert
 
@@ -41,13 +40,13 @@ def upsert_project(
     existing = session.exec(statement).first()
     if existing:
         existing.sqlmodel_update(data.model_dump())
-        existing.updated_at = datetime.now(timezone.utc)
+        existing.updated_at = get_datetime_utc()
         session.add(existing)
-        session.commit()
+        session.flush()
         session.refresh(existing)
         return existing
     project = Project(source_path=source_path, **data.model_dump())
     session.add(project)
-    session.commit()
+    session.flush()
     session.refresh(project)
     return project

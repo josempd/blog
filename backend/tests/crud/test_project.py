@@ -28,6 +28,7 @@ def test_upsert_project_creates_new(db: Session) -> None:
     source = f"projects/{random_lower_string()}.md"
     data = _project_data()
     project = upsert_project(session=db, source_path=source, data=data)
+    db.commit()
     assert project.id is not None
     assert project.title == data.title
     assert project.slug == data.slug
@@ -40,10 +41,12 @@ def test_upsert_project_updates_existing(db: Session) -> None:
     source = f"projects/{random_lower_string()}.md"
     data = _project_data()
     project1 = upsert_project(session=db, source_path=source, data=data)
+    db.commit()
     original_id = project1.id
 
     updated_data = _project_data(title="Updated Project")
     project2 = upsert_project(session=db, source_path=source, data=updated_data)
+    db.commit()
     assert project2.id == original_id
     assert project2.title == "Updated Project"
     assert project2.updated_at is not None
@@ -53,6 +56,7 @@ def test_get_projects(db: Session) -> None:
     source = f"projects/{random_lower_string()}.md"
     data = _project_data()
     upsert_project(session=db, source_path=source, data=data)
+    db.commit()
 
     projects, count = get_projects(session=db)
     assert len(projects) >= 1
@@ -75,6 +79,7 @@ def test_get_projects_featured_only(db: Session) -> None:
         source_path=f"projects/{normal_slug}.md",
         data=_project_data(slug=normal_slug, featured=False),
     )
+    db.commit()
 
     projects, _count = get_projects(session=db, featured_only=True)
     slugs = [p.slug for p in projects]
@@ -92,6 +97,7 @@ def test_get_projects_pagination(db: Session) -> None:
             source_path=f"projects/{slug}.md",
             data=_project_data(slug=slug, sort_order=i),
         )
+    db.commit()
 
     projects, count = get_projects(session=db, skip=0, limit=2)
     assert len(projects) == 2
@@ -106,6 +112,7 @@ def test_get_project_by_slug(db: Session) -> None:
     source = f"projects/{random_lower_string()}.md"
     data = _project_data()
     upsert_project(session=db, source_path=source, data=data)
+    db.commit()
 
     found = get_project_by_slug(session=db, slug=data.slug)
     assert found is not None
