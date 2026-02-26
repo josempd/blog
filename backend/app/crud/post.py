@@ -1,8 +1,7 @@
-from datetime import datetime, timezone
-
 from sqlalchemy.orm import selectinload
 from sqlmodel import Session, col, func, select
 
+from app.models.base import get_datetime_utc
 from app.models.post import Post, PostTagLink, Tag
 from app.schemas.post import PostUpsert, TagCreate
 
@@ -45,14 +44,14 @@ def upsert_post(*, session: Session, source_path: str, data: PostUpsert) -> Post
     existing = session.exec(statement).first()
     if existing:
         existing.sqlmodel_update(data.model_dump())
-        existing.updated_at = datetime.now(timezone.utc)
+        existing.updated_at = get_datetime_utc()
         session.add(existing)
-        session.commit()
+        session.flush()
         session.refresh(existing)
         return existing
     post = Post(source_path=source_path, **data.model_dump())
     session.add(post)
-    session.commit()
+    session.flush()
     session.refresh(post)
     return post
 
@@ -64,7 +63,7 @@ def get_or_create_tag(*, session: Session, data: TagCreate) -> Tag:
         return existing
     tag = Tag(name=data.name, slug=data.slug)
     session.add(tag)
-    session.commit()
+    session.flush()
     session.refresh(tag)
     return tag
 
