@@ -1,3 +1,11 @@
+# --- Islands build stage ---
+FROM node:22-slim AS islands
+WORKDIR /build
+COPY islands/package.json islands/package-lock.json* ./
+RUN npm install --ignore-scripts
+COPY islands/ ./
+RUN npm run build
+
 FROM python:3.10
 
 ENV PYTHONUNBUFFERED=1
@@ -32,6 +40,8 @@ COPY ./backend/scripts /app/backend/scripts
 COPY ./backend/pyproject.toml ./backend/alembic.ini /app/backend/
 
 COPY ./backend/app /app/backend/app
+
+COPY --from=islands /backend/app/static/dist/islands /app/backend/app/static/dist/islands
 
 COPY ./content /app/content
 
