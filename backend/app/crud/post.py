@@ -68,6 +68,20 @@ def get_or_create_tag(*, session: Session, data: TagCreate) -> Tag:
     return tag
 
 
+def delete_posts_not_in(*, session: Session, source_paths: set[str]) -> int:
+    """Delete posts whose source_path is not in the given set. Returns count deleted."""
+    statement = select(Post).where(Post.source_path.is_not(None))  # type: ignore[union-attr]
+    all_posts = session.exec(statement).all()
+    deleted = 0
+    for post in all_posts:
+        if post.source_path not in source_paths:
+            session.delete(post)
+            deleted += 1
+    if deleted:
+        session.flush()
+    return deleted
+
+
 def get_tags_with_counts(
     *, session: Session, published_only: bool = True
 ) -> list[tuple[Tag, int]]:

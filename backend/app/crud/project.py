@@ -50,3 +50,17 @@ def upsert_project(
     session.flush()
     session.refresh(project)
     return project
+
+
+def delete_projects_not_in(*, session: Session, source_paths: set[str]) -> int:
+    """Delete projects whose source_path is not in the given set. Returns count deleted."""
+    statement = select(Project).where(Project.source_path.is_not(None))  # type: ignore[union-attr]
+    all_projects = session.exec(statement).all()
+    deleted = 0
+    for project in all_projects:
+        if project.source_path not in source_paths:
+            session.delete(project)
+            deleted += 1
+    if deleted:
+        session.flush()
+    return deleted
