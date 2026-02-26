@@ -52,10 +52,9 @@ backend/
     schemas/          # Pydantic v2 request/response — one file per domain
     crud/             # Data access functions — one file per domain
     services/         # Business logic — one file per domain
-    exceptions.py     # Domain exceptions (not HTTP)
     content/          # Markdown engine — pure functions [Phase 2]
       frontmatter.py, renderer.py, loader.py
-    core/             # config.py (Settings), db.py, security.py
+    core/             # config.py (Settings), db.py, security.py, exceptions.py
     templates/        # Jinja2: base.html, pages/, partials/, feeds/, errors/ [Phase 3]
     static/           # css/, js/htmx.min.js, dist/islands/ [Phase 3-4]
     main.py           # FastAPI app, router mounts
