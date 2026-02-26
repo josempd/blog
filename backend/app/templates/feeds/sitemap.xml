@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url><loc>{{ base_url }}</loc></url>
+    <url><loc>{{ base_url }}blog</loc></url>
+    <url><loc>{{ base_url }}projects</loc></url>
+    <url><loc>{{ base_url }}about</loc></url>
+    {% for post in posts %}
+    <url>
+        <loc>{{ base_url }}blog/{{ post.slug }}</loc>
+        {% if post.updated_at %}<lastmod>{{ post.updated_at.strftime('%Y-%m-%d') }}</lastmod>{% endif %}
+    </url>
+    {% endfor %}
+</urlset>

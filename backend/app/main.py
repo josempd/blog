@@ -1,6 +1,7 @@
 import sentry_sdk
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
 from app.api.main import api_router
@@ -13,6 +14,7 @@ from app.core.middleware import (
     TraceIdMiddleware,
 )
 from app.core.observability import setup_observability
+from app.pages.router import pages_router
 
 # 1. Structured logging — must be first so all subsequent logs are formatted
 setup_logging(
@@ -26,7 +28,9 @@ if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
 
 
 def custom_generate_unique_id(route: APIRoute) -> str:
-    return f"{route.tags[0]}-{route.name}"
+    if route.tags:
+        return f"{route.tags[0]}-{route.name}"
+    return route.name
 
 
 # 3. Create app
@@ -59,3 +63,5 @@ setup_observability(app)
 
 # 7. Routers
 app.include_router(api_router, prefix=settings.API_V1_STR)
+app.include_router(pages_router)
+app.mount("/static", StaticFiles(directory="app/static"), name="static")

@@ -1,8 +1,7 @@
-from datetime import datetime, timezone
-
 from sqlalchemy.orm import selectinload
 from sqlmodel import Session, col, func, select
 
+from app.models.base import get_datetime_utc
 from app.models.post import Post, PostTagLink, Tag
 from app.schemas.post import PostUpsert, TagCreate
 
@@ -45,14 +44,14 @@ def upsert_post(*, session: Session, source_path: str, data: PostUpsert) -> Post
     existing = session.exec(statement).first()
     if existing:
         existing.sqlmodel_update(data.model_dump())
-        existing.updated_at = datetime.now(timezone.utc)
+        existing.updated_at = get_datetime_utc()
         session.add(existing)
-        session.commit()
+        session.flush()
         session.refresh(existing)
         return existing
     post = Post(source_path=source_path, **data.model_dump())
     session.add(post)
-    session.commit()
+    session.flush()
     session.refresh(post)
     return post
 
@@ -64,9 +63,43 @@ def get_or_create_tag(*, session: Session, data: TagCreate) -> Tag:
         return existing
     tag = Tag(name=data.name, slug=data.slug)
     session.add(tag)
-    session.commit()
+    session.flush()
     session.refresh(tag)
     return tag
+
+
+def delete_posts_not_in(*, session: Session, source_paths: set[str]) -> int:
+    """Delete posts whose source_path is not in the given set. Returns count deleted."""
+    statement = select(Post).where(Post.source_path.is_not(None))  # type: ignore[union-attr]
+    all_posts = session.exec(statement).all()
+    deleted = 0
+    for post in all_posts:
+        if post.source_path not in source_paths:
+            session.delete(post)
+            deleted += 1
+    if deleted:
+        session.flush()
+    return deleted
+
+
+def search_posts(
+    *,
+    session: Session,
+    query: str,
+    published_only: bool = True,
+    limit: int = 20,
+) -> list[Post]:
+    eager = selectinload(Post.tags)  # type: ignore[arg-type]
+    statement = select(Post).options(eager)
+    if published_only:
+        statement = statement.where(Post.published == True)  # noqa: E712
+    escaped = query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    pattern = f"%{escaped}%"
+    statement = statement.where(
+        (Post.title.ilike(pattern)) | (Post.excerpt.ilike(pattern))  # type: ignore[union-attr]
+    )
+    statement = statement.order_by(col(Post.published_at).desc()).limit(limit)
+    return list(session.exec(statement).all())
 
 
 def get_tags_with_counts(

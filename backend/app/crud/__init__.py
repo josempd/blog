@@ -1,4 +1,5 @@
 from app.crud.post import (  # noqa: F401
+    delete_posts_not_in,
     get_or_create_tag,
     get_post_by_slug,
     get_posts,
@@ -6,6 +7,7 @@ from app.crud.post import (  # noqa: F401
     upsert_post,
 )
 from app.crud.project import (  # noqa: F401
+    delete_projects_not_in,
     get_project_by_slug,
     get_projects,
     upsert_project,

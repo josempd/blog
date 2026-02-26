@@ -47,6 +47,13 @@ class Settings(BaseSettings):
     OTEL_EXPORTER_OTLP_ENDPOINT: str = "http://localhost:4317"
     OTEL_METRIC_EXPORT_INTERVAL_MS: int = 60000
 
+    # Site
+    SITE_TITLE: str = "jmpd.sh blog"
+    SITE_AUTHOR: str = "jmpd"
+    SITE_DESCRIPTION: str = ""
+    GITHUB_USERNAME: str = ""
+    CONTENT_DIR: str = "content"
+
     BACKEND_CORS_ORIGINS: Annotated[
         list[AnyUrl] | str, BeforeValidator(parse_cors)
     ] = []

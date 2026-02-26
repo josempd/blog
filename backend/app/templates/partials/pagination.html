@@ -1,0 +1,12 @@
+{% if has_more %}
+<div class="load-more">
+    <button class="btn btn--outline"
+            hx-get="{{ next_url }}"
+            hx-target="this"
+            hx-swap="outerHTML"
+            hx-indicator=".htmx-indicator">
+        Load more
+        <span class="htmx-indicator">Loading...</span>
+    </button>
+</div>
+{% endif %}

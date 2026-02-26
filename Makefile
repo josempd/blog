@@ -117,6 +117,18 @@ setup: install ## Full dev setup (deps + pre-commit hooks)
 	pre-commit install
 
 # ---------------------------------------------------------------------------
+# Islands
+# ---------------------------------------------------------------------------
+
+.PHONY: islands-build
+islands-build: ## Build Svelte islands
+	cd islands && npm run build
+
+.PHONY: islands-dev
+islands-dev: ## Watch mode for island development
+	cd islands && npm run dev
+
+# ---------------------------------------------------------------------------
 # Help
 # ---------------------------------------------------------------------------
 

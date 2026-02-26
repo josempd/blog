@@ -1,0 +1,10 @@
+# {{ site_title }}
+
+> {{ site_description }}
+
+{% for post in posts %}
+## {{ post.title }}
+
+{{ post.content_markdown }}
+
+{% endfor %}

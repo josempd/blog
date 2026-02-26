@@ -52,10 +52,9 @@ backend/
     schemas/          # Pydantic v2 request/response — one file per domain
     crud/             # Data access functions — one file per domain
     services/         # Business logic — one file per domain
-    exceptions.py     # Domain exceptions (not HTTP)
     content/          # Markdown engine — pure functions [Phase 2]
       frontmatter.py, renderer.py, loader.py
-    core/             # config.py (Settings), db.py, security.py
+    core/             # config.py (Settings), db.py, security.py, exceptions.py
     templates/        # Jinja2: base.html, pages/, partials/, feeds/, errors/ [Phase 3]
     static/           # css/, js/htmx.min.js, dist/islands/ [Phase 3-4]
     main.py           # FastAPI app, router mounts
@@ -110,6 +109,29 @@ Current phase: see [PLAN.md](PLAN.md)
 - No decorative effects — no gradients, sparkles, animations-for-show
 - Visible focus styles — every interactive element has outline/ring on focus, never bare `outline: none`
 - Portfolio audience — digestible by both developers and non-technical stakeholders
+
+## Agent Delegation
+
+Specialized agents live in `.claude/agents/`. **Always delegate implementation work to the appropriate agent** — the orchestrator coordinates and reviews, agents write code.
+
+| Agent | When to use | Model |
+|-------|-------------|-------|
+| `backend` | Python backend: routes, services, CRUD, models, schemas, content engine, migrations | sonnet |
+| `frontend` | Templates, CSS, HTMX interactions, Svelte islands, static files | sonnet |
+| `test-backend` | pytest tests for routes, CRUD, services, content, feeds | sonnet |
+| `test-frontend` | Playwright e2e tests for pages, HTMX, accessibility | sonnet |
+| `feature-spec` | Challenge feature proposals before coding — read-only, Socratic questioning | opus |
+| `review` | Code review after changes — enforce architecture and conventions, read-only | opus |
+| `devops` | Docker, compose, CI/CD, Traefik, deployment config | sonnet |
+
+### Rules
+
+- **Parallelize independent agents.** Launch `frontend` + `backend` simultaneously when their files don't overlap. Launch `test-backend` after implementation agents complete.
+- **Give agents the plan, not breadcrumbs.** Include full context: existing code signatures, model fields, CRUD function names, test patterns. Agents start fresh — they don't see the conversation.
+- **Run `review` proactively** after code changes, before committing. Don't skip this.
+- **Run `feature-spec` before implementing** non-trivial features. Get questions answered before writing code.
+- **Never do an agent's job yourself.** If the task matches an agent description, delegate. The orchestrator's job is to coordinate, fix integration issues, run `make lint` / `make test`, and commit.
+- **Fix integration issues directly.** After agents complete, the orchestrator handles cross-cutting fixes (import sorting, fixture names, path resolution) — don't re-launch an agent for a one-line fix.
 
 ## Do NOT
 
