@@ -87,6 +87,7 @@ class ParsedPage:
     slug: str
     content_markdown: str
     content_html: str
+    frontmatter: dict[str, Any]
 
 
 # ---------------------------------------------------------------------------
@@ -200,6 +201,7 @@ def load_page(file_path: Path, content_dir: Path) -> ParsedPage:
         slug=slug,
         content_markdown=body,
         content_html=render_markdown(body),
+        frontmatter=meta,
     )
 
 

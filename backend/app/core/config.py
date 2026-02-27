@@ -53,6 +53,10 @@ class Settings(BaseSettings):
     SITE_DESCRIPTION: str = ""
     GITHUB_USERNAME: str = ""
     CONTENT_DIR: str = "content"
+    SITE_URL: str = "http://localhost:8000"
+    SITE_AUTHOR_URL: str = ""
+    SITE_AUTHOR_TITLE: str = ""
+    SITE_AUTHOR_BIO: str = ""
 
     BACKEND_CORS_ORIGINS: Annotated[
         list[AnyUrl] | str, BeforeValidator(parse_cors)

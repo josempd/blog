@@ -48,6 +48,10 @@ templates.env.globals.update(
         "site_author": settings.SITE_AUTHOR,
         "site_description": settings.SITE_DESCRIPTION,
         "github_username": settings.GITHUB_USERNAME,
+        "site_url": settings.SITE_URL,
+        "site_author_url": settings.SITE_AUTHOR_URL,
+        "site_author_title": settings.SITE_AUTHOR_TITLE,
+        "site_author_bio": settings.SITE_AUTHOR_BIO,
         "current_year": datetime.now(timezone.utc).year,
         "island_asset": island_asset,
     }
