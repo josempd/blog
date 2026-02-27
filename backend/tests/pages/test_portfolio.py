@@ -86,3 +86,17 @@ def test_about_page(client: TestClient) -> None:
     assert response.status_code == 200
     assert "text/html" in response.headers["content-type"]
     assert "About" in response.text
+
+
+def test_about_has_jsonld_person(client: TestClient) -> None:
+    response = client.get("/about")
+    assert response.status_code == 200
+    assert '"@type": "Person"' in response.text
+    assert '"name":' in response.text
+
+
+def test_about_has_canonical(client: TestClient) -> None:
+    response = client.get("/about")
+    assert response.status_code == 200
+    assert 'rel="canonical"' in response.text
+    assert "/about" in response.text

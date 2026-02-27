@@ -165,6 +165,47 @@ def test_search_excludes_drafts(client: TestClient) -> None:
     assert "Draft Post" not in response.text
 
 
+def test_blog_detail_has_jsonld(client: TestClient) -> None:
+    response = client.get("/blog/published-post")
+    assert response.status_code == 200
+    assert '"@type": "BlogPosting"' in response.text
+    assert '"headline": "Published Post"' in response.text
+    assert '"@type": "Person"' in response.text
+
+
+def test_blog_detail_has_breadcrumb(client: TestClient) -> None:
+    response = client.get("/blog/published-post")
+    assert response.status_code == 200
+    assert '"@type": "BreadcrumbList"' in response.text
+    assert "/blog" in response.text
+
+
+def test_blog_detail_has_canonical(client: TestClient) -> None:
+    response = client.get("/blog/published-post")
+    assert response.status_code == 200
+    assert 'rel="canonical"' in response.text
+    assert "/blog/published-post" in response.text
+
+
+def test_blog_detail_markdown(client: TestClient) -> None:
+    response = client.get("/blog/published-post.md")
+    assert response.status_code == 200
+    assert "text/markdown" in response.headers["content-type"]
+    assert "# Hello" in response.text
+
+
+def test_blog_detail_markdown_404(client: TestClient) -> None:
+    response = client.get("/blog/nonexistent-post.md")
+    assert response.status_code == 404
+
+
+def test_home_has_website_jsonld(client: TestClient) -> None:
+    response = client.get("/")
+    assert response.status_code == 200
+    assert '"@type": "WebSite"' in response.text
+    assert '"SearchAction"' in response.text
+
+
 def test_blog_empty_state(client: TestClient, db: Session) -> None:
     _cleanup(db)
     response = client.get("/blog")
