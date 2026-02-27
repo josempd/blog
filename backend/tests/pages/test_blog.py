@@ -60,6 +60,16 @@ def seed_posts(client: TestClient, db: Session):  # noqa: ARG001
 
     _make_post(db, slug="another-post", title="Another Post", published=True)
     _make_post(db, slug="draft-post", title="Draft Post", published=False)
+    _make_post(
+        db,
+        slug="post-with-toc",
+        title="Post With ToC",
+        content_html=(
+            '<h2 id="intro">Introduction</h2><p>Text</p>'
+            '<h3 id="details">Details</h3><p>More text</p>'
+            '<h2 id="conclusion">Conclusion</h2><p>End</p>'
+        ),
+    )
 
     yield
 
@@ -204,6 +214,28 @@ def test_home_has_website_jsonld(client: TestClient) -> None:
     assert response.status_code == 200
     assert '"@type": "WebSite"' in response.text
     assert '"SearchAction"' in response.text
+
+
+def test_blog_detail_has_toc(client: TestClient) -> None:
+    response = client.get("/blog/post-with-toc")
+    assert response.status_code == 200
+    assert 'id="toc-nav"' in response.text
+    assert 'aria-label="Table of contents"' in response.text
+    assert 'href="#intro"' in response.text
+    assert 'href="#conclusion"' in response.text
+
+
+def test_blog_detail_toc_sidebar_layout(client: TestClient) -> None:
+    response = client.get("/blog/post-with-toc")
+    assert response.status_code == 200
+    assert "post-layout" in response.text
+    assert "post-sidebar" in response.text
+
+
+def test_blog_detail_no_toc_for_short_post(client: TestClient) -> None:
+    response = client.get("/blog/published-post")
+    assert response.status_code == 200
+    assert "post-toc" not in response.text
 
 
 def test_blog_empty_state(client: TestClient, db: Session) -> None:
