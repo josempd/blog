@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session
@@ -100,3 +102,34 @@ def test_about_has_canonical(client: TestClient) -> None:
     assert response.status_code == 200
     assert 'rel="canonical"' in response.text
     assert "/about" in response.text
+
+
+def test_project_card_renders_github_metadata(client: TestClient, db: Session) -> None:
+    _cleanup(db)
+    project = _make_project(db)
+    project.github_stars = 42
+    project.github_language = "Python"
+    project.github_forks = 5
+    project.github_last_pushed_at = datetime(2024, 6, 1, tzinfo=timezone.utc)
+    db.add(project)
+    db.commit()
+
+    response = client.get("/projects")
+    assert response.status_code == 200
+    assert "Python" in response.text
+    assert "42" in response.text
+    assert "aria-label" in response.text
+    _cleanup(db)
+
+
+def test_project_card_without_metadata_renders_cleanly(
+    client: TestClient, db: Session
+) -> None:
+    _cleanup(db)
+    project = _make_project(db)
+
+    response = client.get("/projects")
+    assert response.status_code == 200
+    assert project.title in response.text
+    assert "project-meta" not in response.text
+    _cleanup(db)

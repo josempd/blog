@@ -1,6 +1,8 @@
 """Integration tests for services.content_sync — uses tmp_path + real DB session."""
 
+from datetime import datetime, timezone
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from sqlmodel import Session, select
@@ -9,6 +11,7 @@ from app.core.exceptions import ContentSyncError
 from app.models.post import Post, PostTagLink, Tag
 from app.models.project import Project
 from app.services.content_sync import sync_content
+from app.services.github import GitHubRepoMeta
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -208,3 +211,53 @@ def test_nonexistent_directory_raises_content_sync_error(
     nonexistent = tmp_path / "does-not-exist"
     with pytest.raises(ContentSyncError):
         sync_content(session=db, content_dir=nonexistent)
+
+
+def test_sync_enriches_project_with_github_metadata(
+    db: Session, tmp_path: Path
+) -> None:
+    _cleanup(db)
+    _setup_project(
+        tmp_path,
+        "github-proj.md",
+        title="GitHub Project",
+        repo_url="https://github.com/owner/repo",
+    )
+    mock_meta = GitHubRepoMeta(
+        stars=100,
+        language="Python",
+        forks=10,
+        last_pushed_at=datetime(2024, 6, 1, tzinfo=timezone.utc),
+    )
+
+    with patch("app.services.project.fetch_repo_metadata", return_value=mock_meta):
+        sync_content(session=db, content_dir=tmp_path)
+
+    db.expire_all()
+    project = _get_project(db, "github-proj")
+    assert project is not None
+    assert project.github_stars == 100
+    assert project.github_language == "Python"
+    assert project.github_forks == 10
+    assert project.github_last_pushed_at is not None
+    _cleanup(db)
+
+
+def test_sync_continues_when_github_api_fails(db: Session, tmp_path: Path) -> None:
+    _cleanup(db)
+    _setup_project(
+        tmp_path,
+        "failing-github-proj.md",
+        title="Failing GitHub Project",
+        repo_url="https://github.com/owner/repo",
+    )
+
+    with patch("app.services.project.fetch_repo_metadata", return_value=None):
+        sync_content(session=db, content_dir=tmp_path)
+
+    db.expire_all()
+    project = _get_project(db, "failing-github-proj")
+    assert project is not None
+    assert project.title == "Failing GitHub Project"
+    assert project.github_stars is None
+    _cleanup(db)
