@@ -8,6 +8,8 @@
     <meta property="og:title" content="{% block og_title %}{{ site_title }}{% endblock %}">
     <meta property="og:description" content="{% block og_description %}{{ site_description }}{% endblock %}">
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}{{ site_url }}{% endblock %}">
+    <link rel="canonical" href="{% block canonical %}{{ site_url }}{% endblock %}">
     <link rel="alternate" type="application/rss+xml" title="{{ site_title }}" href="/feed.xml">
     <script>
     (function(){
@@ -18,6 +20,23 @@
     })();
     </script>
     <link rel="stylesheet" href="/static/css/style.css">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": {{ site_title | tojson }},
+        "url": {{ site_url | tojson }},
+        "description": {{ site_description | tojson }},
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": {{ (site_url ~ "/search?q={search_term_string}") | tojson }}
+            },
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
     {% block head_extra %}{% endblock %}
 </head>
 <body>

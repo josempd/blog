@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
+from fastapi.responses import Response
 
 from app.api.deps import SessionDep
 from app.pages.deps import is_htmx_request, templates
@@ -67,6 +68,14 @@ async def search(request: Request, session: SessionDep, q: str = ""):
             request, "pages/search_results_partial.html", context
         )
     return templates.TemplateResponse(request, "pages/search.html", context)
+
+
+@router.get("/blog/{slug}.md")
+async def blog_detail_md(slug: str, session: SessionDep):
+    post = blog_service.get_published_post(session=session, slug=slug)
+    return Response(
+        content=post.content_markdown, media_type="text/markdown; charset=utf-8"
+    )
 
 
 @router.get("/blog/{slug}")

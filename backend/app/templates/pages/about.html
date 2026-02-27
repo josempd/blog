@@ -1,12 +1,41 @@
 {% extends "base.html" %}
 
 {% block title %}About &mdash; {{ site_title }}{% endblock %}
+{% block description %}{{ page.frontmatter.bio or site_author_bio or site_description }}{% endblock %}
+{% block og_title %}About {{ site_author }}{% endblock %}
+{% block og_description %}{{ page.frontmatter.bio or site_author_bio or site_description }}{% endblock %}
+{% block canonical %}{{ site_url }}/about{% endblock %}
+{% block og_url %}{{ site_url }}/about{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": {{ site_author | tojson }},
+    "url": {{ (page.frontmatter.url or site_author_url or site_url) | tojson }}
+    {% if page.frontmatter.job_title or site_author_title %},
+    "jobTitle": {{ (page.frontmatter.job_title or site_author_title) | tojson }}
+    {% endif %}
+    {% if page.frontmatter.bio or site_author_bio %},
+    "description": {{ (page.frontmatter.bio or site_author_bio) | tojson }}
+    {% endif %}
+    {% if github_username %},
+    "sameAs": [
+        {{ ("https://github.com/" ~ github_username) | tojson }}
+        {% for link in page.frontmatter.get("social_links", []) %}
+        , {{ link | tojson }}
+        {% endfor %}
+    ]
+    {% endif %}
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <div class="page-header">
     <h1>About</h1>
 </div>
-
 <div class="prose post-body">
     {{ page.content_html | safe }}
 </div>

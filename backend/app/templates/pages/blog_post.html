@@ -5,6 +5,43 @@
 {% block og_title %}{{ post.title }}{% endblock %}
 {% block og_description %}{% if post.excerpt %}{{ post.excerpt }}{% else %}{{ site_description }}{% endif %}{% endblock %}
 {% block og_type %}article{% endblock %}
+{% block canonical %}{{ site_url }}/blog/{{ post.slug }}{% endblock %}
+{% block og_url %}{{ site_url }}/blog/{{ post.slug }}{% endblock %}
+
+{% block head_extra %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": {{ post.title | tojson }},
+    "description": {{ (post.excerpt or site_description) | tojson }},
+    {% if post.published_at %}"datePublished": "{{ post.published_at.isoformat() }}",{% endif %}
+    {% if post.updated_at %}"dateModified": "{{ post.updated_at.isoformat() }}",{% endif %}
+    "author": {
+        "@type": "Person",
+        "name": {{ site_author | tojson }},
+        "url": {{ site_url | tojson }}
+    },
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": {{ (site_url ~ "/blog/" ~ post.slug) | tojson }}
+    }
+    {% if post.tags %},
+    "keywords": {{ post.tags | map(attribute='name') | list | tojson }}
+    {% endif %}
+}
+</script>
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Blog", "item": {{ (site_url ~ "/blog") | tojson }}},
+        {"@type": "ListItem", "position": 2, "name": {{ post.title | tojson }}, "item": {{ (site_url ~ "/blog/" ~ post.slug) | tojson }}}
+    ]
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <article>

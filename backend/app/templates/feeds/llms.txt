@@ -5,7 +5,7 @@
 ## Blog Posts
 
 {% for post in posts %}
-- [{{ post.title }}]({{ base_url }}blog/{{ post.slug }})
+- [{{ post.title }}]({{ base_url }}blog/{{ post.slug }}.md)
 {% endfor %}
 
 ## Projects

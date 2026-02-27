@@ -64,5 +64,26 @@ async def llms_full_txt(request: Request, session: SessionDep):
 @router.get("/robots.txt")
 async def robots_txt(request: Request):
     base_url = str(request.base_url)
-    body = f"User-agent: *\nAllow: /\n\nSitemap: {base_url}sitemap.xml\n"
+    body = (
+        "User-agent: *\n"
+        "Allow: /\n"
+        "\n"
+        "# AI crawlers — explicitly welcome\n"
+        "User-agent: GPTBot\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: ClaudeBot\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: Google-Extended\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: PerplexityBot\n"
+        "Allow: /\n"
+        "\n"
+        "User-agent: CCBot\n"
+        "Allow: /\n"
+        "\n"
+        f"Sitemap: {base_url}sitemap.xml\n"
+    )
     return Response(content=body, media_type="text/plain")
