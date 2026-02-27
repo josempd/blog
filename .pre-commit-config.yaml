@@ -39,6 +39,18 @@ repos:
         files: ^backend/pyproject\.toml$
 
   # --------------------------------------------------------------------------
+  # svelte-check — type-check Svelte islands
+  # --------------------------------------------------------------------------
+  - repo: local
+    hooks:
+      - id: svelte-check
+        name: svelte-check
+        entry: bash -c 'cd islands && npm run check'
+        language: system
+        pass_filenames: false
+        files: ^islands/.*\.(js|svelte)$
+
+  # --------------------------------------------------------------------------
   # Conventional commits
   # --------------------------------------------------------------------------
   - repo: https://github.com/compilerla/conventional-pre-commit

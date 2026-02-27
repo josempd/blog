@@ -62,7 +62,7 @@ fmt: ## Auto-format with ruff
 	$(RUN) bash scripts/format.sh
 
 .PHONY: check
-check: lint test ## Lint + test (CI equivalent)
+check: lint islands-check test ## Lint + type-check islands + test (CI equivalent)
 
 # ---------------------------------------------------------------------------
 # Testing
@@ -127,6 +127,26 @@ islands-build: ## Build Svelte islands
 .PHONY: islands-dev
 islands-dev: ## Watch mode for island development
 	cd islands && npm run dev
+
+.PHONY: islands-check
+islands-check: ## Type-check Svelte islands (svelte-check)
+	cd islands && npm run check
+
+# ---------------------------------------------------------------------------
+# E2E Tests
+# ---------------------------------------------------------------------------
+
+.PHONY: e2e
+e2e: ## Run Playwright e2e tests
+	cd e2e && npx playwright test
+
+.PHONY: e2e-headed
+e2e-headed: ## Run Playwright e2e tests in headed mode
+	cd e2e && npx playwright test --headed
+
+.PHONY: e2e-report
+e2e-report: ## Show Playwright test report
+	cd e2e && npx playwright show-report
 
 # ---------------------------------------------------------------------------
 # Help

@@ -20,6 +20,8 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 backend/htmlcov/
+e2e/test-results/
+e2e/playwright-report/
 
 # Islands build output
 backend/app/static/dist/
