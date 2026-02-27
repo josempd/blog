@@ -857,6 +857,11 @@ nav[aria-label="Main navigation"] {
   text-decoration: underline;
 }
 
+.post-toc a.toc-active {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
 .post-toc a:visited {
   color: var(--color-text);
 }
@@ -1122,4 +1127,42 @@ nav[aria-label="Main navigation"] {
 
 .view-all {
   margin-top: var(--space-5);
+}
+
+/* Blog Post Layout (two-column with sticky ToC) */
+.post-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+.post-layout > .page-header {
+  grid-column: 1 / -1;
+}
+
+.post-sidebar {
+  order: -1;
+}
+
+.post-content {
+  min-width: 0;
+}
+
+@media (min-width: 64rem) {
+  .post-layout {
+    grid-template-columns: minmax(0, var(--prose-width)) 14rem;
+    gap: var(--space-7);
+  }
+
+  .post-sidebar {
+    order: 0;
+  }
+
+  .post-toc {
+    position: sticky;
+    top: var(--space-5);
+    max-height: calc(100vh - var(--space-7));
+    overflow-y: auto;
+    margin-bottom: 0;
+  }
 }

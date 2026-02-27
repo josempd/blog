@@ -44,7 +44,7 @@
 {% endblock %}
 
 {% block content %}
-<article>
+<article class="post-layout">
     <header class="page-header">
         <h1>{{ post.title }}</h1>
         <div class="post-meta">
@@ -54,29 +54,43 @@
         </div>
     </header>
 
-    {% if toc and toc | length > 1 %}
-    <nav class="post-toc" aria-label="Table of contents">
-        <h2>Contents</h2>
-        <ol>
-            {% for entry in toc %}
-            <li class="toc-level-{{ entry.level }}">
-                <a href="#{{ entry.id }}">{{ entry.text }}</a>
-            </li>
-            {% endfor %}
-        </ol>
-    </nav>
-    {% endif %}
+    <div class="post-content">
+        <div class="prose post-body">
+            {{ post.content_html | safe }}
+        </div>
 
-    <div class="prose post-body">
-        {{ post.content_html | safe }}
+        {% if post.tags %}
+        <nav class="post-tags" aria-label="Post tags">
+            {% for tag in post.tags %}
+            <a href="/blog?tag={{ tag.slug }}" class="tag" rel="tag">{{ tag.name }}</a>
+            {% endfor %}
+        </nav>
+        {% endif %}
     </div>
 
-    {% if post.tags %}
-    <nav class="post-tags" aria-label="Post tags">
-        {% for tag in post.tags %}
-        <a href="/blog?tag={{ tag.slug }}" class="tag" rel="tag">{{ tag.name }}</a>
-        {% endfor %}
-    </nav>
+    {% if toc and toc | length > 1 %}
+    <aside class="post-sidebar">
+        <nav class="post-toc" aria-label="Table of contents" id="toc-nav">
+            <h2>Contents</h2>
+            <ol>
+                {% for entry in toc %}
+                <li class="toc-level-{{ entry.level }}">
+                    <a href="#{{ entry.id }}">{{ entry.text }}</a>
+                </li>
+                {% endfor %}
+            </ol>
+        </nav>
+        <div id="toc-island"></div>
+    </aside>
     {% endif %}
 </article>
+{% endblock %}
+
+{% block scripts %}
+{% if toc and toc | length > 1 %}
+    {% set toc_js = island_asset("TableOfContents") %}
+    {% if toc_js %}
+    <script type="module" src="{{ toc_js }}"></script>
+    {% endif %}
+{% endif %}
 {% endblock %}
