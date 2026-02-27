@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "module": "es2022",
+    "moduleResolution": "bundler",
+    "target": "es2022",
+    "verbatimModuleSyntax": true
+  },
+  "include": ["src/**/*.js", "src/**/*.svelte"]
+}

@@ -32,6 +32,7 @@
       tag === "INPUT" ||
       tag === "TEXTAREA" ||
       tag === "SELECT" ||
+      // @ts-ignore — activeElement may be HTMLElement which has isContentEditable
       document.activeElement?.isContentEditable
     );
   }
@@ -121,8 +122,10 @@
 
   $effect(() => {
     const link = document.querySelector(".nav-search");
+    // @ts-ignore — querySelector returns Element but nav-search is an HTMLElement
     if (link) link.style.display = "none";
     return () => {
+      // @ts-ignore — same cast as above
       if (link) link.style.display = "";
     };
   });
