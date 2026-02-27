@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlmodel import Session, col, func, select
 
 from app.models.base import get_datetime_utc
@@ -50,6 +52,27 @@ def upsert_project(
     session.flush()
     session.refresh(project)
     return project
+
+
+def update_github_metadata(
+    *,
+    session: Session,
+    project: Project,
+    stars: int,
+    language: str | None,
+    forks: int,
+    last_pushed_at: datetime | None,
+) -> None:
+    """Update GitHub-sourced metadata fields on an existing project.
+
+    Does NOT commit — the caller owns the transaction boundary.
+    """
+    project.github_stars = stars
+    project.github_language = language
+    project.github_forks = forks
+    project.github_last_pushed_at = last_pushed_at
+    session.add(project)
+    session.flush()
 
 
 def delete_projects_not_in(*, session: Session, source_paths: set[str]) -> int:

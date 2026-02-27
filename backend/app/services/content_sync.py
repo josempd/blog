@@ -13,11 +13,15 @@ from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session
 
 from app.content.loader import load_page, load_post, load_project
+from app.core.config import settings
 from app.core.exceptions import ContentSyncError
 from app.crud.post import delete_posts_not_in
 from app.crud.project import delete_projects_not_in
 from app.services.post import sync_post_from_content
-from app.services.project import sync_project_from_content
+from app.services.project import (
+    enrich_project_github_metadata,
+    sync_project_from_content,
+)
 
 logger = structlog.stdlib.get_logger(__name__)
 
@@ -66,12 +70,19 @@ def sync_content(*, session: Session, content_dir: Path) -> None:
             )
 
     synced_projects = 0
+    enriched_projects = 0
     project_source_paths: set[str] = set()
     for file_path in _md_files(content_dir / "projects"):
         try:
             parsed = load_project(file_path, content_dir)
             project_source_paths.add(parsed.source_path)
-            sync_project_from_content(session=session, parsed=parsed)
+            project = sync_project_from_content(session=session, parsed=parsed)
+            if enrich_project_github_metadata(
+                session=session,
+                project=project,
+                token=settings.GITHUB_TOKEN.get_secret_value(),
+            ):
+                enriched_projects += 1
             session.commit()
             synced_projects += 1
         except IntegrityError:
@@ -106,5 +117,6 @@ def sync_content(*, session: Session, content_dir: Path) -> None:
         "content_sync_complete",
         posts=synced_posts,
         projects=synced_projects,
+        projects_enriched=enriched_projects,
         pages=len(pages),
     )
