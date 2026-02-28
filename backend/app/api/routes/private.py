@@ -1,10 +1,9 @@
-from typing import Any
-
 from fastapi import APIRouter
 from pydantic import BaseModel
 
 from app import crud
 from app.api.deps import SessionDep
+from app.models import User
 from app.schemas import UserCreate, UserPublic
 
 router = APIRouter(tags=["private"], prefix="/private")
@@ -18,7 +17,7 @@ class PrivateUserCreate(BaseModel):
 
 
 @router.post("/users/", response_model=UserPublic)
-def create_user(user_in: PrivateUserCreate, session: SessionDep) -> Any:
+def create_user(user_in: PrivateUserCreate, session: SessionDep) -> User:
     """
     Create a new user.
     """
