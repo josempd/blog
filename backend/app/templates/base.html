@@ -10,6 +10,7 @@
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
     <meta property="og:url" content="{% block og_url %}{{ site_url }}{% endblock %}">
     <link rel="canonical" href="{% block canonical %}{{ site_url }}{% endblock %}">
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
     <link rel="alternate" type="application/rss+xml" title="{{ site_title }}" href="/feed.xml">
     <script>
     (function(){
@@ -19,7 +20,11 @@
         document.documentElement.setAttribute('data-theme', 'dark');
     })();
     </script>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/tokens.css">
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <link rel="stylesheet" href="/static/css/syntax.css">
+    <link rel="stylesheet" href="/static/css/utilities.css">
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -48,6 +53,7 @@
     {% include "partials/footer.html" %}
     <script src="/static/js/htmx.min.js"></script>
     <script src="/static/js/theme.js"></script>
+    <script src="/static/js/contact.js"></script>
     {% set search_js = island_asset("SearchDialog") %}
     {% if search_js %}
     <script type="module" src="{{ search_js }}"></script>

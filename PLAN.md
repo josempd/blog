@@ -109,7 +109,7 @@ Both share the same models, CRUD layer, and DB session.
 - `errors/` -- 404, 500
 
 **Static files** (`/backend/app/static/`):
-- `css/style.css` -- clean minimal design, system fonts, 60-70ch prose width, Pygments CSS
+- `css/` -- split by concern: `tokens.css`, `base.css`, `components.css`, `syntax.css`, `utilities.css`
 - `js/htmx.min.js` -- vendored (not CDN)
 
 **HTMX usage**:

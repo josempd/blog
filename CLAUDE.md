@@ -100,7 +100,7 @@ Current phase: see [PLAN.md](PLAN.md)
 - Progressive enhancement — real `href` on all links, HTMX enhances
 - Vendored assets only — no CDN links
 - Semantic HTML — `<article>`, `<time datetime>`, `<nav aria-label>`, heading hierarchy
-- Single `style.css` — system fonts, 60–70ch prose width
+- CSS split by concern — `tokens.css`, `base.css`, `components.css`, `syntax.css`, `utilities.css` — loaded in order via `<link>` tags in `base.html`. No build step, no `@import`. System fonts, 60–70ch prose width.
 - Spacing scale — only use defined steps via CSS custom properties (`--space-1` through `--space-7`), no arbitrary values
 - Type ramp — consistent font sizes via CSS custom properties (`--text-sm` through `--text-3xl`), no ad-hoc sizes
 - Disciplined color palette — neutrals + one accent, WCAG AA contrast minimum
