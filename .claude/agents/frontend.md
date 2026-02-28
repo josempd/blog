@@ -216,7 +216,11 @@ Block inheritance pattern:
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}{{ site_title }}{% endblock %}</title>
   {% block meta %}{% endblock %}
-  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/tokens.css">
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/components.css">
+  <link rel="stylesheet" href="/static/css/syntax.css">
+  <link rel="stylesheet" href="/static/css/utilities.css">
   <link rel="alternate" type="application/rss+xml" title="{{ site_title }}" href="/feed.xml">
 </head>
 <body>
@@ -304,17 +308,23 @@ Key rules:
 
 ## CSS
 
-Single file: `backend/app/static/css/style.css`
+CSS split by concern — loaded in order via `<link>` tags in `base.html`. No build step, no `@import`.
 
+- `tokens.css` — reset, custom properties (`:root`), dark mode token overrides
+- `base.css` — typography, prose, layout container
+- `components.css` — header, nav, post-card, tags, project-card, buttons, theme-toggle, ToC, search, footer, HTMX indicator
+- `syntax.css` — Pygments light + dark themes
+- `utilities.css` — sr-only, error-page, empty-state, focus styles, skip-link, page layout helpers (hero, post-layout)
+
+Key rules:
 - System font stack — no web fonts
 - Prose width: 60–70ch
-- Pygments CSS for syntax highlighting
 - No CSS framework — vanilla CSS only
 - All spacing uses design system custom properties (`--space-1` through `--space-7`) — no arbitrary pixel values
 - All font sizes use the type ramp (`--text-sm` through `--text-3xl`) — no ad-hoc sizes
 - All colors use palette variables (`--color-text`, `--color-accent`, etc.) — no inline hex values
 - Shared component tokens (`--radius`, `--shadow`) ensure visual consistency across partials
-- Code blocks: `--color-bg-subtle` background, `--radius` border-radius, `--space-3` padding, `--text-sm` font-size, `overflow-x: auto`. Pygments theme styles are inlined into `style.css`.
+- Code blocks: `--color-code-bg` background, `--radius` border-radius, `--space-4` padding, `--text-sm` font-size, `overflow-x: auto`.
 
 ## Semantic HTML & Accessibility
 

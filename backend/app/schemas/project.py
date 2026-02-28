@@ -30,6 +30,10 @@ class ProjectPublic(BaseModel):
     sort_order: int
     created_at: datetime | None = None
     updated_at: datetime | None = None
+    github_stars: int | None = None
+    github_language: str | None = None
+    github_forks: int | None = None
+    github_last_pushed_at: datetime | None = None
 
 
 class ProjectDetail(ProjectPublic):

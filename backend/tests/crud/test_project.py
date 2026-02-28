@@ -1,8 +1,15 @@
+from datetime import datetime, timezone
+
 import pytest
 from pydantic import ValidationError
 from sqlmodel import Session
 
-from app.crud.project import get_project_by_slug, get_projects, upsert_project
+from app.crud.project import (
+    get_project_by_slug,
+    get_projects,
+    update_github_metadata,
+    upsert_project,
+)
 from app.schemas.project import ProjectUpsert
 from tests.utils.utils import random_lower_string
 
@@ -142,3 +149,26 @@ def test_project_upsert_rejects_long_url() -> None:
 def test_project_upsert_rejects_long_repo_url() -> None:
     with pytest.raises(ValidationError):
         ProjectUpsert(title="ok", slug="ok", repo_url="x" * 501)
+
+
+def test_update_github_metadata(db: Session) -> None:
+    source = f"projects/{random_lower_string()}.md"
+    data = _project_data()
+    project = upsert_project(session=db, source_path=source, data=data)
+    db.commit()
+
+    update_github_metadata(
+        session=db,
+        project=project,
+        stars=42,
+        language="Python",
+        forks=5,
+        last_pushed_at=datetime(2024, 6, 1, tzinfo=timezone.utc),
+    )
+    db.commit()
+    db.refresh(project)
+
+    assert project.github_stars == 42
+    assert project.github_language == "Python"
+    assert project.github_forks == 5
+    assert project.github_last_pushed_at is not None

@@ -3,8 +3,15 @@
 {% block title %}{{ site_title }}{% endblock %}
 
 {% block content %}
+<section class="hero" aria-label="About">
+    <h1 class="hero__name">{{ site_author }}</h1>
+    <p class="hero__tagline">{{ site_author_title }}</p>
+    <p class="hero__bio">{{ site_author_bio }}</p>
+    <a href="{{ site_author_url }}" class="hero__cta" data-contact><span aria-hidden="true">&rarr;</span> Get in touch</a>
+</section>
+
 <div class="page-header">
-    <h1>Recent Posts</h1>
+    <h2>Recent Posts</h2>
 </div>
 
 {% if posts %}

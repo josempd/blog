@@ -94,7 +94,7 @@ The project follows strict layered architecture: Routes → Services → CRUD �
 - HTMX interactions have `hx-indicator` loading states
 - Focus styles visible on all interactive elements
 - No decorative effects — no gradients, sparkles, or animations without function
-- Pygments styles inlined into `style.css` (single stylesheet rule)
+- Pygments styles in `syntax.css` (separate stylesheet, loaded via `<link>` in `base.html`)
 
 ## LLM-Friendly
 

@@ -18,7 +18,7 @@ backend/app/templates/
   errors/          # Error pages (404, 500)
 
 backend/app/static/
-  css/style.css    # Single stylesheet — system fonts, spacing/type/color tokens, 60-70ch prose
+  css/             # Split by concern: tokens.css, base.css, components.css, syntax.css, utilities.css
   js/htmx.min.js   # Vendored HTMX
   dist/islands/    # Vite-built Svelte components
 
@@ -40,4 +40,4 @@ islands/           # Svelte 5 source components + Vite config
 
 Progressive enhancement — all links have real `href`, HTMX enhances navigation. No CDN — all JS/CSS is vendored. Semantic HTML with proper heading hierarchy, ARIA labels, and `<time datetime>`.
 
-Design system tokens (spacing, typography, color, component) are defined in `style.css` as CSS custom properties. See frontend agent and CLAUDE.md for the full specification.
+Design system tokens (spacing, typography, color, component) are defined in `tokens.css` as CSS custom properties. See frontend agent and CLAUDE.md for the full specification.

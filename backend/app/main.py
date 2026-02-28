@@ -1,5 +1,6 @@
 import sentry_sdk
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
@@ -64,4 +65,11 @@ setup_observability(app)
 # 7. Routers
 app.include_router(api_router, prefix=settings.API_V1_STR)
 app.include_router(pages_router)
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon() -> RedirectResponse:
+    return RedirectResponse(url="/static/favicon.svg", status_code=301)
+
+
 app.mount("/static", StaticFiles(directory="app/static"), name="static")

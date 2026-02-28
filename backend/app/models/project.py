@@ -27,3 +27,10 @@ class Project(SQLModel, table=True):
         default=None,
         sa_type=DateTime(timezone=True),  # type: ignore[arg-type]
     )
+    github_stars: int | None = Field(default=None)
+    github_language: str | None = Field(default=None, max_length=100)
+    github_forks: int | None = Field(default=None)
+    github_last_pushed_at: datetime | None = Field(
+        default=None,
+        sa_type=DateTime(timezone=True),  # type: ignore[arg-type]
+    )

@@ -8,6 +8,7 @@ from pydantic import (
     EmailStr,
     HttpUrl,
     PostgresDsn,
+    SecretStr,
     computed_field,
     model_validator,
 )
@@ -52,6 +53,7 @@ class Settings(BaseSettings):
     SITE_AUTHOR: str = "jmpd"
     SITE_DESCRIPTION: str = ""
     GITHUB_USERNAME: str = ""
+    GITHUB_TOKEN: SecretStr = SecretStr("")
     CONTENT_DIR: str = "content"
     SITE_URL: str = "http://localhost:8000"
     SITE_AUTHOR_URL: str = ""
