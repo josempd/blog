@@ -4,7 +4,12 @@ from datetime import datetime
 from pydantic import EmailStr
 from sqlmodel import Field, SQLModel
 
-from app.models.user import UserBase
+
+class UserBase(SQLModel):
+    email: EmailStr = Field(max_length=255)
+    is_active: bool = True
+    is_superuser: bool = False
+    full_name: str | None = Field(default=None, max_length=255)
 
 
 class UserCreate(UserBase):
