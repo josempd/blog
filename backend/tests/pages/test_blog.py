@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session
 
 from app.crud.post import get_or_create_tag, upsert_post
-from app.models.post import Post, PostTagLink, Tag
+from app.models.post import Post
 from app.schemas.post import PostUpsert, TagCreate
 from tests.utils.utils import random_lower_string
 
@@ -36,20 +36,13 @@ def _make_post(
     return post
 
 
-def _cleanup(db: Session) -> None:
-    db.exec(PostTagLink.__table__.delete())  # type: ignore[arg-type]
-    db.exec(Tag.__table__.delete())  # type: ignore[arg-type]
-    db.exec(Post.__table__.delete())  # type: ignore[arg-type]
-    db.commit()
-
-
 # ---------------------------------------------------------------------------
-# Module-scoped seed fixture
+# Seed fixture
 # ---------------------------------------------------------------------------
 
 
-@pytest.fixture(scope="module", autouse=True)
-def seed_posts(client: TestClient, db: Session):  # noqa: ARG001
+@pytest.fixture()
+def seed_posts(db: Session) -> None:
     tag = get_or_create_tag(session=db, data=TagCreate(name="Python", slug="python"))
     db.commit()
 
@@ -71,16 +64,13 @@ def seed_posts(client: TestClient, db: Session):  # noqa: ARG001
         ),
     )
 
-    yield
-
-    _cleanup(db)
-
 
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_home_page(client: TestClient) -> None:
     response = client.get("/")
     assert response.status_code == 200
@@ -88,6 +78,7 @@ def test_home_page(client: TestClient) -> None:
     assert "Recent Posts" in response.text
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_blog_list(client: TestClient) -> None:
     response = client.get("/blog")
     assert response.status_code == 200
@@ -95,12 +86,14 @@ def test_blog_list(client: TestClient) -> None:
     assert "Published Post" in response.text
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_blog_list_excludes_drafts(client: TestClient) -> None:
     response = client.get("/blog")
     assert response.status_code == 200
     assert "Draft Post" not in response.text
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_blog_tag_filter(client: TestClient) -> None:
     response = client.get("/blog?tag=python")
     assert response.status_code == 200
@@ -109,12 +102,14 @@ def test_blog_tag_filter(client: TestClient) -> None:
     assert "Another Post" not in response.text
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_blog_tag_filter_no_match(client: TestClient) -> None:
     response = client.get("/blog?tag=nonexistent-tag")
     assert response.status_code == 200
     assert "No posts" in response.text
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_blog_detail(client: TestClient) -> None:
     response = client.get("/blog/published-post")
     assert response.status_code == 200
@@ -130,12 +125,14 @@ def test_blog_detail_404(client: TestClient) -> None:
     assert "not found" in response.text.lower()
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_blog_detail_unpublished_returns_404(client: TestClient) -> None:
     response = client.get("/blog/draft-post")
     assert response.status_code == 404
     assert "text/html" in response.headers["content-type"]
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_blog_htmx_partial(client: TestClient) -> None:
     response = client.get("/blog", headers={"HX-Request": "true"})
     assert response.status_code == 200
@@ -143,6 +140,7 @@ def test_blog_htmx_partial(client: TestClient) -> None:
     assert "Published Post" in response.text
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_search_page(client: TestClient) -> None:
     response = client.get("/search?q=Published")
     assert response.status_code == 200
@@ -150,6 +148,7 @@ def test_search_page(client: TestClient) -> None:
     assert "Published Post" in response.text
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_search_htmx_partial(client: TestClient) -> None:
     response = client.get("/search?q=Published", headers={"HX-Request": "true"})
     assert response.status_code == 200
@@ -157,6 +156,7 @@ def test_search_htmx_partial(client: TestClient) -> None:
     assert "Published Post" in response.text
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_search_no_results(client: TestClient) -> None:
     response = client.get("/search?q=xyznonexistent")
     assert response.status_code == 200
@@ -169,12 +169,14 @@ def test_search_empty_query(client: TestClient) -> None:
     assert "Search" in response.text
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_search_excludes_drafts(client: TestClient) -> None:
     response = client.get("/search?q=Draft")
     assert response.status_code == 200
     assert "Draft Post" not in response.text
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_blog_detail_has_jsonld(client: TestClient) -> None:
     response = client.get("/blog/published-post")
     assert response.status_code == 200
@@ -183,6 +185,7 @@ def test_blog_detail_has_jsonld(client: TestClient) -> None:
     assert '"@type": "Person"' in response.text
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_blog_detail_has_breadcrumb(client: TestClient) -> None:
     response = client.get("/blog/published-post")
     assert response.status_code == 200
@@ -190,6 +193,7 @@ def test_blog_detail_has_breadcrumb(client: TestClient) -> None:
     assert "/blog" in response.text
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_blog_detail_has_canonical(client: TestClient) -> None:
     response = client.get("/blog/published-post")
     assert response.status_code == 200
@@ -197,6 +201,7 @@ def test_blog_detail_has_canonical(client: TestClient) -> None:
     assert "/blog/published-post" in response.text
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_blog_detail_markdown(client: TestClient) -> None:
     response = client.get("/blog/published-post.md")
     assert response.status_code == 200
@@ -209,6 +214,7 @@ def test_blog_detail_markdown_404(client: TestClient) -> None:
     assert response.status_code == 404
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_home_has_website_jsonld(client: TestClient) -> None:
     response = client.get("/")
     assert response.status_code == 200
@@ -216,6 +222,7 @@ def test_home_has_website_jsonld(client: TestClient) -> None:
     assert '"SearchAction"' in response.text
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_blog_detail_has_toc(client: TestClient) -> None:
     response = client.get("/blog/post-with-toc")
     assert response.status_code == 200
@@ -225,6 +232,7 @@ def test_blog_detail_has_toc(client: TestClient) -> None:
     assert 'href="#conclusion"' in response.text
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_blog_detail_toc_sidebar_layout(client: TestClient) -> None:
     response = client.get("/blog/post-with-toc")
     assert response.status_code == 200
@@ -232,14 +240,14 @@ def test_blog_detail_toc_sidebar_layout(client: TestClient) -> None:
     assert "post-sidebar" in response.text
 
 
+@pytest.mark.usefixtures("seed_posts")
 def test_blog_detail_no_toc_for_short_post(client: TestClient) -> None:
     response = client.get("/blog/published-post")
     assert response.status_code == 200
     assert "post-toc" not in response.text
 
 
-def test_blog_empty_state(client: TestClient, db: Session) -> None:
-    _cleanup(db)
+def test_blog_empty_state(client: TestClient) -> None:
     response = client.get("/blog")
     assert response.status_code == 200
     assert "No posts" in response.text

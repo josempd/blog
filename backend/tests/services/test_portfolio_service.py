@@ -39,18 +39,12 @@ def _make_project(
     return project
 
 
-def _cleanup(db: Session) -> None:
-    db.exec(Project.__table__.delete())  # type: ignore[arg-type]
-    db.commit()
-
-
 # ---------------------------------------------------------------------------
 # Tests — list_projects
 # ---------------------------------------------------------------------------
 
 
 def test_list_projects(db: Session) -> None:
-    _cleanup(db)
     _make_project(db, slug="proj-a", title="Project A")
     _make_project(db, slug="proj-b", title="Project B")
 
@@ -60,11 +54,9 @@ def test_list_projects(db: Session) -> None:
     assert "proj-a" in slugs
     assert "proj-b" in slugs
     assert count == 2
-    _cleanup(db)
 
 
 def test_list_projects_featured_only(db: Session) -> None:
-    _cleanup(db)
     _make_project(db, slug="featured-proj", title="Featured Project", featured=True)
     _make_project(db, slug="normal-proj", title="Normal Project", featured=False)
 
@@ -74,11 +66,9 @@ def test_list_projects_featured_only(db: Session) -> None:
     assert "featured-proj" in slugs
     assert "normal-proj" not in slugs
     assert count == 1
-    _cleanup(db)
 
 
 def test_list_projects_empty(db: Session) -> None:
-    _cleanup(db)
     projects, count = portfolio_service.list_projects(session=db)
     assert projects == []
     assert count == 0

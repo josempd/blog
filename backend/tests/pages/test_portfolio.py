@@ -35,26 +35,19 @@ def _make_project(
     return project
 
 
-def _cleanup(db: Session) -> None:
-    db.exec(Project.__table__.delete())  # type: ignore[arg-type]
-    db.commit()
-
-
 # ---------------------------------------------------------------------------
-# Module-scoped seed fixture
+# Seed fixture
 # ---------------------------------------------------------------------------
 
 
-@pytest.fixture(scope="module", autouse=True)
-def seed_projects(client: TestClient, db: Session):  # noqa: ARG001
+@pytest.fixture()
+def seed_projects(db: Session) -> None:
     _make_project(
         db,
         slug="test-project",
         title="Test Project",
         description="A project for testing",
     )
-    yield
-    _cleanup(db)
 
 
 # ---------------------------------------------------------------------------
@@ -62,6 +55,7 @@ def seed_projects(client: TestClient, db: Session):  # noqa: ARG001
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.usefixtures("seed_projects")
 def test_projects_page(client: TestClient) -> None:
     response = client.get("/projects")
     assert response.status_code == 200
@@ -69,14 +63,14 @@ def test_projects_page(client: TestClient) -> None:
     assert "Test Project" in response.text
 
 
+@pytest.mark.usefixtures("seed_projects")
 def test_projects_page_shows_description(client: TestClient) -> None:
     response = client.get("/projects")
     assert response.status_code == 200
     assert "A project for testing" in response.text
 
 
-def test_projects_empty_state(client: TestClient, db: Session) -> None:
-    _cleanup(db)
+def test_projects_empty_state(client: TestClient) -> None:
     response = client.get("/projects")
     assert response.status_code == 200
     assert "No projects" in response.text
@@ -105,7 +99,6 @@ def test_about_has_canonical(client: TestClient) -> None:
 
 
 def test_project_card_renders_github_metadata(client: TestClient, db: Session) -> None:
-    _cleanup(db)
     project = _make_project(db)
     project.github_stars = 42
     project.github_language = "Python"
@@ -119,17 +112,14 @@ def test_project_card_renders_github_metadata(client: TestClient, db: Session) -
     assert "Python" in response.text
     assert "42" in response.text
     assert "aria-label" in response.text
-    _cleanup(db)
 
 
 def test_project_card_without_metadata_renders_cleanly(
     client: TestClient, db: Session
 ) -> None:
-    _cleanup(db)
     project = _make_project(db)
 
     response = client.get("/projects")
     assert response.status_code == 200
     assert project.title in response.text
     assert "project-meta" not in response.text
-    _cleanup(db)

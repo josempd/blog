@@ -8,7 +8,7 @@ import pytest
 from sqlmodel import Session, select
 
 from app.core.exceptions import ContentSyncError
-from app.models.post import Post, PostTagLink, Tag
+from app.models.post import Post
 from app.models.project import Project
 from app.services.content_sync import sync_content
 from app.services.github import GitHubRepoMeta
@@ -60,21 +60,12 @@ def _get_project(session: Session, slug: str) -> Project | None:
     return session.exec(select(Project).where(Project.slug == slug)).first()
 
 
-def _cleanup(session: Session) -> None:
-    session.exec(PostTagLink.__table__.delete())  # type: ignore[arg-type]
-    session.exec(Tag.__table__.delete())  # type: ignore[arg-type]
-    session.exec(Post.__table__.delete())  # type: ignore[arg-type]
-    session.exec(Project.__table__.delete())  # type: ignore[arg-type]
-    session.commit()
-
-
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
 
 
 def test_sync_creates_posts_and_projects(db: Session, tmp_path: Path) -> None:
-    _cleanup(db)
     _setup_post(tmp_path, "2024-01-01-hello.md", title="Hello", published="true")
     _setup_project(tmp_path, "my-project.md", title="My Project")
 
@@ -82,11 +73,9 @@ def test_sync_creates_posts_and_projects(db: Session, tmp_path: Path) -> None:
 
     assert _get_post(db, "hello") is not None
     assert _get_project(db, "my-project") is not None
-    _cleanup(db)
 
 
 def test_idempotent_resync(db: Session, tmp_path: Path) -> None:
-    _cleanup(db)
     _setup_post(tmp_path, "2024-01-01-idem.md", title="Idempotent")
 
     sync_content(session=db, content_dir=tmp_path)
@@ -101,11 +90,9 @@ def test_idempotent_resync(db: Session, tmp_path: Path) -> None:
 
     count = db.exec(select(Post).where(Post.slug == "idem")).all()
     assert len(count) == 1
-    _cleanup(db)
 
 
 def test_content_updates_propagate(db: Session, tmp_path: Path) -> None:
-    _cleanup(db)
     path = _setup_post(tmp_path, "2024-01-01-update.md", title="Original")
     sync_content(session=db, content_dir=tmp_path)
 
@@ -120,11 +107,9 @@ def test_content_updates_propagate(db: Session, tmp_path: Path) -> None:
     post = _get_post(db, "update")
     assert post is not None
     assert post.title == "Updated"
-    _cleanup(db)
 
 
 def test_tags_created_and_associated(db: Session, tmp_path: Path) -> None:
-    _cleanup(db)
     _setup_post(
         tmp_path,
         "2024-01-01-tagged.md",
@@ -138,11 +123,9 @@ def test_tags_created_and_associated(db: Session, tmp_path: Path) -> None:
     assert post is not None
     tag_names = sorted(t.name for t in post.tags)
     assert tag_names == ["fastapi", "python"]
-    _cleanup(db)
 
 
 def test_orphan_cleanup(db: Session, tmp_path: Path) -> None:
-    _cleanup(db)
     _setup_post(tmp_path, "2024-01-01-keep.md", title="Keep")
     _setup_post(tmp_path, "2024-01-01-remove.md", title="Remove")
     _setup_project(tmp_path, "keep-proj.md", title="Keep Proj")
@@ -165,11 +148,9 @@ def test_orphan_cleanup(db: Session, tmp_path: Path) -> None:
     assert _get_post(db, "remove") is None
     assert _get_project(db, "keep-proj") is not None
     assert _get_project(db, "remove-proj") is None
-    _cleanup(db)
 
 
 def test_slug_conflict_logs_warning_no_crash(db: Session, tmp_path: Path) -> None:
-    _cleanup(db)
     # Two posts from different source files that produce the same slug
     _setup_post(tmp_path, "2024-01-01-conflict.md", title="Conflict", slug="same-slug")
     _setup_post(
@@ -181,11 +162,9 @@ def test_slug_conflict_logs_warning_no_crash(db: Session, tmp_path: Path) -> Non
 
     posts = db.exec(select(Post).where(Post.slug == "same-slug")).all()
     assert len(posts) == 1
-    _cleanup(db)
 
 
 def test_partial_failure_does_not_abort_sync(db: Session, tmp_path: Path) -> None:
-    _cleanup(db)
     _setup_post(tmp_path, "2024-01-01-good.md", title="Good Post")
     # Write an invalid file (missing title)
     _write_md(tmp_path / "posts", "2024-01-02-bad.md", "---\nslug: bad\n---\nNo title.")
@@ -195,14 +174,11 @@ def test_partial_failure_does_not_abort_sync(db: Session, tmp_path: Path) -> Non
 
     assert _get_post(db, "good") is not None
     assert _get_project(db, "good-proj") is not None
-    _cleanup(db)
 
 
 def test_empty_directory_no_errors(db: Session, tmp_path: Path) -> None:
-    _cleanup(db)
     # tmp_path exists but has no posts/projects/pages subdirs
     sync_content(session=db, content_dir=tmp_path)
-    _cleanup(db)
 
 
 def test_nonexistent_directory_raises_content_sync_error(
@@ -216,7 +192,6 @@ def test_nonexistent_directory_raises_content_sync_error(
 def test_sync_enriches_project_with_github_metadata(
     db: Session, tmp_path: Path
 ) -> None:
-    _cleanup(db)
     _setup_project(
         tmp_path,
         "github-proj.md",
@@ -240,11 +215,9 @@ def test_sync_enriches_project_with_github_metadata(
     assert project.github_language == "Python"
     assert project.github_forks == 10
     assert project.github_last_pushed_at is not None
-    _cleanup(db)
 
 
 def test_sync_continues_when_github_api_fails(db: Session, tmp_path: Path) -> None:
-    _cleanup(db)
     _setup_project(
         tmp_path,
         "failing-github-proj.md",
@@ -260,4 +233,3 @@ def test_sync_continues_when_github_api_fails(db: Session, tmp_path: Path) -> No
     assert project is not None
     assert project.title == "Failing GitHub Project"
     assert project.github_stars is None
-    _cleanup(db)
