@@ -99,7 +99,7 @@ def test_get_posts_published_only(db: Session) -> None:
     slugs = [p.slug for p in posts]
     assert slug_pub in slugs
     assert slug_draft not in slugs
-    assert count >= 1
+    assert count == 1
 
 
 def test_get_or_create_tag_creates(db: Session) -> None:
@@ -142,7 +142,7 @@ def test_get_tags_with_counts(db: Session) -> None:
     results = get_tags_with_counts(session=db, published_only=True)
     tag_map = {t.slug: c for t, c in results}
     assert tag_slug in tag_map
-    assert tag_map[tag_slug] >= 1
+    assert tag_map[tag_slug] == 1
 
 
 def test_post_upsert_rejects_long_title() -> None:
@@ -215,4 +215,4 @@ def test_get_posts_filtered_by_tag(db: Session) -> None:
     slugs = [p.slug for p in posts]
     assert tagged_slug in slugs
     assert untagged_slug not in slugs
-    assert count >= 1
+    assert count == 1
