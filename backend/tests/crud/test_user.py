@@ -129,3 +129,23 @@ def test_authenticate_user_with_bcrypt_upgrades_to_argon2(db: Session) -> None:
     assert verified
     # Should not need another update since it's already argon2
     assert updated_hash is None
+
+
+def test_user_model_schema_field_parity() -> None:
+    """Shared fields between User model and UserBase schema must stay in sync."""
+    from app.models.user import User
+    from app.schemas.user import UserBase
+
+    model_only = {"id", "hashed_password", "created_at"}
+    shared_fields = set(User.model_fields) & set(UserBase.model_fields) - model_only
+
+    for name in shared_fields:
+        assert name in User.model_fields, f"User model missing field: {name}"
+        assert name in UserBase.model_fields, f"UserBase schema missing field: {name}"
+        assert (
+            User.model_fields[name].annotation == UserBase.model_fields[name].annotation
+        ), (
+            f"Type mismatch for '{name}': "
+            f"model={User.model_fields[name].annotation}, "
+            f"schema={UserBase.model_fields[name].annotation}"
+        )
