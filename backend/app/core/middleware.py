@@ -1,12 +1,14 @@
-"""Request middleware: trace IDs, structured request logging, OTEL metrics.
+"""Request middleware: security headers, trace IDs, structured logging, metrics.
 
 Middleware are added to the app in ``main.py``.  Last-added executes first,
-so the add order is: Metrics → RequestLogging → TraceId (TraceId runs first).
+so the add order is: Metrics → RequestLogging → TraceId → CORS → SecurityHeaders
+(SecurityHeaders runs first).
 """
 
 from __future__ import annotations
 
 import ipaddress
+import secrets
 import time
 import uuid
 from typing import Any
@@ -15,6 +17,8 @@ import structlog
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import Response
+
+from app.core.config import settings
 
 logger = structlog.get_logger(__name__)
 
@@ -36,7 +40,68 @@ def anonymize_ip(ip: str | None) -> str | None:
 
 
 # ---------------------------------------------------------------------------
-# 1. Trace ID
+# 1. Security Headers
+# ---------------------------------------------------------------------------
+
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Add security headers (HSTS, CSP, X-Frame-Options, etc.) to all responses.
+
+    Generates a per-request nonce for CSP and stores it in ``request.state.csp_nonce``
+    so Jinja2 templates can reference it via ``{{ request.state.csp_nonce }}``.
+    """
+
+    def __init__(self, app: Any) -> None:
+        super().__init__(app)
+        self._static_headers: dict[str, str] = {
+            "X-Frame-Options": "DENY",
+            "X-Content-Type-Options": "nosniff",
+            "Referrer-Policy": "strict-origin-when-cross-origin",
+            "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+        }
+        if settings.ENVIRONMENT != "local":
+            self._static_headers["Strict-Transport-Security"] = (
+                "max-age=63072000; includeSubDomains"
+            )
+
+        # Build CSP template with {nonce} placeholder
+        script_src = "'self' 'nonce-{nonce}'"
+        connect_src = "'self'"
+        if settings.UMAMI_ENABLED and settings.UMAMI_HOST:
+            script_src += f" {settings.UMAMI_HOST}"
+            connect_src += f" {settings.UMAMI_HOST}"
+
+        self._csp_template = (
+            f"default-src 'none'; "
+            f"script-src {script_src}; "
+            f"style-src 'self'; "
+            f"img-src 'self'; "
+            f"font-src 'self'; "
+            f"connect-src {connect_src}; "
+            f"base-uri 'self'; "
+            f"form-action 'self'; "
+            f"frame-ancestors 'none'"
+        )
+        self._csp_header_name = (
+            "Content-Security-Policy-Report-Only"
+            if settings.CSP_REPORT_ONLY
+            else "Content-Security-Policy"
+        )
+
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> Response:
+        nonce = secrets.token_urlsafe(16)
+        request.state.csp_nonce = nonce
+        response = await call_next(request)
+        for header, value in self._static_headers.items():
+            response.headers[header] = value
+        response.headers[self._csp_header_name] = self._csp_template.format(nonce=nonce)
+        return response
+
+
+# ---------------------------------------------------------------------------
+# 2. Trace ID
 # ---------------------------------------------------------------------------
 
 
@@ -76,7 +141,7 @@ def _extract_otel_trace_id() -> str | None:
 
 
 # ---------------------------------------------------------------------------
-# 2. Request Logging
+# 3. Request Logging
 # ---------------------------------------------------------------------------
 
 
@@ -111,7 +176,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
 
 
 # ---------------------------------------------------------------------------
-# 3. Metrics (OTEL)
+# 4. Metrics (OTEL)
 # ---------------------------------------------------------------------------
 
 

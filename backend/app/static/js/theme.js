@@ -5,3 +5,5 @@ function toggleTheme() {
   html.setAttribute('data-theme', next);
   localStorage.setItem('theme', next);
 }
+
+document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
