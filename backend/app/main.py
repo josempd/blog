@@ -15,6 +15,7 @@ from app.core.middleware import (
     TraceIdMiddleware,
 )
 from app.core.observability import setup_observability
+from app.core.rate_limit import limiter
 from app.pages.router import pages_router
 
 # 1. Structured logging — must be first so all subsequent logs are formatted
@@ -39,6 +40,9 @@ app = FastAPI(
 
 # 3. Exception handlers (RFC 9457 Problem Details)
 register_exception_handlers(app)
+
+# 3b. Rate limiter state (used by SlowAPI decorators)
+app.state.limiter = limiter
 
 # 4. Middleware — last-added runs first, so add order is:
 #    Metrics → RequestLogging → TraceId → CORS → SecurityHeaders
