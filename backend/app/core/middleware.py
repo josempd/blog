@@ -23,7 +23,15 @@ from app.core.config import settings
 logger = structlog.get_logger(__name__)
 
 # Paths to skip for request logging (health/readiness probes)
-_SKIP_LOG_PATHS = frozenset({"/health", "/healthz", "/ready", "/readiness"})
+_SKIP_LOG_PATHS = frozenset(
+    {
+        "/health",
+        "/healthz",
+        "/ready",
+        "/readiness",
+        "/api/v1/utils/health-check/",
+    }
+)
 
 
 def anonymize_ip(ip: str | None) -> str | None:
