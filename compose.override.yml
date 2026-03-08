@@ -51,7 +51,12 @@ services:
       - "5432:5432"
 
   adminer:
+    image: adminer
     restart: "no"
+    depends_on:
+      - db
+    environment:
+      - ADMINER_DESIGN=pepa-linha-dark
     ports:
       - "8080:8080"
 

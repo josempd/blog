@@ -12,7 +12,7 @@ CI/CD and build tooling — GitHub Actions workflows, Docker, compose files, dev
 
 backend/Dockerfile         # Multi-layer Python 3.10 + uv image
 backend/.dockerignore      # Docker build exclusions
-compose.yml                # Production base (db, adminer, prestart, backend)
+compose.yml                # Production base (db, prestart, backend)
 compose.override.yml       # Dev overrides (Traefik, live reload, mailcatcher)
 compose.traefik.yml        # Production HTTPS (Let's Encrypt ACME)
 

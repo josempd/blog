@@ -62,12 +62,12 @@ COPY --from=islands /build/dist /app/app/static/dist/islands
 
 **`compose.yml`** (production base):
 - `db`: PostgreSQL 18, named volume, healthcheck
-- `adminer`: Web DB UI on port 8080
 - `prestart`: Runs `scripts/prestart.sh` (migrations + initial data + content sync)
 - `backend`: Depends on `db` (healthy) + `prestart` (completed_successfully)
 
 **`compose.override.yml`** (dev — auto-loaded):
 - `proxy`: Traefik 3.6, debug mode, ports 80 + 8090
+- `adminer`: Web DB UI on port 8080 (dev-only)
 - `backend`: `fastapi run --reload`, bind mount `./backend:/app/backend` for bidirectional file access
 - `prestart`: bind mount `./backend:/app/backend` so host migrations are visible
 - `mailcatcher`: SMTP on 1025, UI on 1080
