@@ -67,6 +67,7 @@ services:
         condition: service_healthy
         restart: true
     command: bash scripts/prestart.sh
+    stop_grace_period: 120s
     env_file:
       - .env
     environment:
@@ -90,6 +91,7 @@ services:
   backend:
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
     restart: always
+    stop_grace_period: 35s
     networks:
       - traefik-public
       - default

@@ -1,3 +1,7 @@
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
+import structlog
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from fastapi.routing import APIRoute
@@ -6,6 +10,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.api.main import api_router
 from app.core.config import settings
+from app.core.db import engine
 from app.core.exception_handlers import register_exception_handlers
 from app.core.logging import setup_logging
 from app.core.middleware import (
@@ -24,6 +29,38 @@ setup_logging(
     json_output=settings.LOG_FORMAT == "json",
 )
 
+logger = structlog.get_logger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    yield
+    # --- Shutdown ---
+    logger.info("shutdown_started")
+    if settings.OTEL_ENABLED:
+        _shutdown_otel()
+    engine.dispose()
+    logger.info("shutdown_complete")
+
+
+def _shutdown_otel() -> None:
+    try:
+        from opentelemetry import metrics, trace
+        from opentelemetry.sdk.metrics import MeterProvider as SdkMeterProvider
+        from opentelemetry.sdk.trace import TracerProvider as SdkTracerProvider
+
+        tracer_provider = trace.get_tracer_provider()
+        if isinstance(tracer_provider, SdkTracerProvider):
+            tracer_provider.force_flush(timeout_millis=5000)
+            tracer_provider.shutdown()
+
+        meter_provider = metrics.get_meter_provider()
+        if isinstance(meter_provider, SdkMeterProvider):
+            meter_provider.force_flush(timeout_millis=5000)
+            meter_provider.shutdown()
+    except Exception:
+        logger.warning("otel_shutdown_failed", exc_info=True)
+
 
 def custom_generate_unique_id(route: APIRoute) -> str:
     if route.tags:
@@ -36,6 +73,7 @@ app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     generate_unique_id_function=custom_generate_unique_id,
+    lifespan=lifespan,
 )
 
 # 3. Exception handlers (RFC 9457 Problem Details)
