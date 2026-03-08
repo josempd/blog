@@ -6,6 +6,7 @@ so the add order is: Metrics → RequestLogging → TraceId (TraceId runs first)
 
 from __future__ import annotations
 
+import ipaddress
 import time
 import uuid
 from typing import Any
@@ -19,6 +20,19 @@ logger = structlog.get_logger(__name__)
 
 # Paths to skip for request logging (health/readiness probes)
 _SKIP_LOG_PATHS = frozenset({"/health", "/healthz", "/ready", "/readiness"})
+
+
+def anonymize_ip(ip: str | None) -> str | None:
+    """Zero last octet (IPv4 /24) or last 80 bits (IPv6 /48)."""
+    if not ip:
+        return None
+    try:
+        addr = ipaddress.ip_address(ip)
+        if isinstance(addr, ipaddress.IPv4Address):
+            return str(ipaddress.IPv4Network(f"{ip}/24", strict=False).network_address)
+        return str(ipaddress.IPv6Network(f"{ip}/48", strict=False).network_address)
+    except ValueError:
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -85,6 +99,13 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
             path=request.url.path,
             status=response.status_code,
             duration_ms=duration_ms,
+            referrer=request.headers.get("referer"),
+            user_agent=request.headers.get("user-agent"),
+            content_length=response.headers.get("content-length"),
+            client_ip=anonymize_ip(
+                request.headers.get("x-forwarded-for", "").split(",")[0].strip()
+                or (request.client.host if request.client else None)
+            ),
         )
         return response
 
@@ -120,5 +141,10 @@ class MetricsMiddleware(BaseHTTPMiddleware):
         metrics["request_duration"].record(duration_s, attrs)
         if response.status_code >= 500:
             metrics["error_count"].add(1, attrs)
+
+        if not request.url.path.startswith(("/api/", "/static/", "/favicon")):
+            page_view = metrics.get("page_view_count")
+            if page_view:
+                page_view.add(1, attrs)
 
         return response
