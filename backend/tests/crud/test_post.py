@@ -186,6 +186,19 @@ def test_tag_create_rejects_long_slug() -> None:
         TagCreate(name="ok", slug="x" * 101)
 
 
+def test_upsert_post_unchanged_skips_updated_at(db: Session) -> None:
+    source = f"posts/{random_lower_string()}.md"
+    data = _post_data()
+    post = upsert_post(session=db, source_path=source, data=data)
+    db.commit()
+    assert post.updated_at is None
+
+    post2 = upsert_post(session=db, source_path=source, data=data)
+    db.commit()
+    assert post2.id == post.id
+    assert post2.updated_at is None
+
+
 def test_get_posts_filtered_by_tag(db: Session) -> None:
     tag_slug = f"filter-{random_lower_string()}"
     tag = get_or_create_tag(

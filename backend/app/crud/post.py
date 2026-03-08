@@ -43,7 +43,13 @@ def upsert_post(*, session: Session, source_path: str, data: PostUpsert) -> Post
     statement = select(Post).where(Post.source_path == source_path)
     existing = session.exec(statement).first()
     if existing:
-        existing.sqlmodel_update(data.model_dump())
+        update_dict = data.model_dump()
+        changed = any(
+            getattr(existing, field) != value for field, value in update_dict.items()
+        )
+        if not changed:
+            return existing
+        existing.sqlmodel_update(update_dict)
         existing.updated_at = get_datetime_utc()
         session.add(existing)
         session.flush()

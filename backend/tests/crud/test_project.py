@@ -59,6 +59,19 @@ def test_upsert_project_updates_existing(db: Session) -> None:
     assert project2.updated_at is not None
 
 
+def test_upsert_project_unchanged_skips_updated_at(db: Session) -> None:
+    source = f"projects/{random_lower_string()}.md"
+    data = _project_data()
+    project = upsert_project(session=db, source_path=source, data=data)
+    db.commit()
+    assert project.updated_at is None
+
+    project2 = upsert_project(session=db, source_path=source, data=data)
+    db.commit()
+    assert project2.id == project.id
+    assert project2.updated_at is None
+
+
 def test_get_projects(db: Session) -> None:
     source = f"projects/{random_lower_string()}.md"
     data = _project_data()
