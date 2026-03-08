@@ -88,6 +88,7 @@ e2e/**                                     → tests
 backend/Dockerfile                         → ci
 backend/.dockerignore                      → ci
 compose*.yml                               → ci
+docker/**                                  → ci
 Makefile                                   → ci
 .pre-commit-config.yaml                    → ci
 backend/scripts/**                         → ci

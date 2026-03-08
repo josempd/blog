@@ -30,6 +30,6 @@ None — core is the foundation layer. All other scopes depend on core.
 
 ## Testing
 
+- `backend/tests/core/test_middleware.py` — middleware and IP anonymization tests
 - `backend/tests/scripts/` — pre-start script tests
 - `backend/tests/api/routes/test_utils.py` — health check tests (future)
-- Unit tests for exception handlers, middleware, logging config

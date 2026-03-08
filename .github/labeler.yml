@@ -92,6 +92,7 @@ scope:ci:
           - backend/Dockerfile
           - backend/.dockerignore
           - compose*.yml
+          - docker/**
           - Makefile
           - .pre-commit-config.yaml
           - backend/scripts/**
