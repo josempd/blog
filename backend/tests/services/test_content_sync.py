@@ -189,6 +189,26 @@ def test_nonexistent_directory_raises_content_sync_error(
         sync_content(session=db, content_dir=nonexistent)
 
 
+def test_missing_subdir_does_not_delete_posts(db: Session, tmp_path: Path) -> None:
+    _setup_post(tmp_path, "2024-01-01-survive.md", title="Survive")
+    _setup_project(tmp_path, "survive-proj.md", title="Survive Proj")
+    sync_content(session=db, content_dir=tmp_path)
+    assert _get_post(db, "survive") is not None
+    assert _get_project(db, "survive-proj") is not None
+
+    # Remove subdirectories entirely
+    import shutil
+
+    shutil.rmtree(tmp_path / "posts")
+    shutil.rmtree(tmp_path / "projects")
+
+    sync_content(session=db, content_dir=tmp_path)
+
+    db.expire_all()
+    assert _get_post(db, "survive") is not None
+    assert _get_project(db, "survive-proj") is not None
+
+
 def test_sync_enriches_project_with_github_metadata(
     db: Session, tmp_path: Path
 ) -> None:

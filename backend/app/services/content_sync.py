@@ -99,11 +99,29 @@ def sync_content(*, session: Session, content_dir: Path) -> None:
                 exc_info=True,
             )
 
-    # Orphan cleanup — remove DB records for deleted Markdown files
-    deleted_posts = delete_posts_not_in(session=session, source_paths=post_source_paths)
-    deleted_projects = delete_projects_not_in(
-        session=session, source_paths=project_source_paths
-    )
+    # Orphan cleanup — remove DB records for deleted Markdown files.
+    # Only run when the subdirectory exists; a missing subdir likely means
+    # a mount failure or fresh deploy, not "delete everything."
+    posts_dir = content_dir / "posts"
+    projects_dir = content_dir / "projects"
+
+    deleted_posts = 0
+    deleted_projects = 0
+
+    if posts_dir.is_dir():
+        deleted_posts = delete_posts_not_in(
+            session=session, source_paths=post_source_paths
+        )
+    else:
+        logger.warning("orphan_cleanup_skipped", directory=str(posts_dir))
+
+    if projects_dir.is_dir():
+        deleted_projects = delete_projects_not_in(
+            session=session, source_paths=project_source_paths
+        )
+    else:
+        logger.warning("orphan_cleanup_skipped", directory=str(projects_dir))
+
     if deleted_posts or deleted_projects:
         session.commit()
 
