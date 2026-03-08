@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from unittest.mock import MagicMock, patch
 
 from fastapi.testclient import TestClient
@@ -136,3 +137,45 @@ def test_x_forwarded_for_used_for_client_ip(client: TestClient) -> None:
     call_kwargs = mock_logger.info.call_args.kwargs
     # First IP in the list (203.0.113.195) → /24 → 203.0.113.0
     assert call_kwargs.get("client_ip") == "203.0.113.0"
+
+
+# ---------------------------------------------------------------------------
+# SecurityHeadersMiddleware — integration tests via TestClient
+# ---------------------------------------------------------------------------
+
+
+def test_security_headers_present(client: TestClient) -> None:
+    """All static security headers are set on every response."""
+    response = client.get("/api/v1/utils/health-check/")
+    assert response.headers["X-Frame-Options"] == "DENY"
+    assert response.headers["X-Content-Type-Options"] == "nosniff"
+    assert response.headers["Referrer-Policy"] == "strict-origin-when-cross-origin"
+    assert (
+        response.headers["Permissions-Policy"]
+        == "camera=(), microphone=(), geolocation=()"
+    )
+
+
+def test_csp_header_contains_nonce(client: TestClient) -> None:
+    """CSP header includes a nonce in script-src."""
+    response = client.get("/api/v1/utils/health-check/")
+    csp = response.headers.get("Content-Security-Policy-Report-Only", "")
+    assert "nonce-" in csp
+    assert "script-src 'self' 'nonce-" in csp
+
+
+def test_csp_nonce_unique_per_request(client: TestClient) -> None:
+    """Each request gets a different nonce."""
+    r1 = client.get("/api/v1/utils/health-check/")
+    r2 = client.get("/api/v1/utils/health-check/")
+    csp1 = r1.headers.get("Content-Security-Policy-Report-Only", "")
+    csp2 = r2.headers.get("Content-Security-Policy-Report-Only", "")
+    nonces = [re.search(r"nonce-([A-Za-z0-9_-]+)", csp) for csp in [csp1, csp2]]
+    assert nonces[0] and nonces[1]
+    assert nonces[0].group(1) != nonces[1].group(1)
+
+
+def test_no_hsts_in_local(client: TestClient) -> None:
+    """HSTS is not set when ENVIRONMENT is 'local' (test default)."""
+    response = client.get("/api/v1/utils/health-check/")
+    assert "Strict-Transport-Security" not in response.headers

@@ -52,6 +52,9 @@ class Settings(BaseSettings):
     UMAMI_HOST: str = ""
     UMAMI_WEBSITE_ID: str = ""
 
+    # Security
+    CSP_REPORT_ONLY: bool = True
+
     # Site
     SITE_TITLE: str = "jmpd.sh blog"
     SITE_AUTHOR: str = "jmpd"

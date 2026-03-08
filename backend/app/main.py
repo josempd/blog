@@ -11,6 +11,7 @@ from app.core.logging import setup_logging
 from app.core.middleware import (
     MetricsMiddleware,
     RequestLoggingMiddleware,
+    SecurityHeadersMiddleware,
     TraceIdMiddleware,
 )
 from app.core.observability import setup_observability
@@ -40,8 +41,8 @@ app = FastAPI(
 register_exception_handlers(app)
 
 # 4. Middleware — last-added runs first, so add order is:
-#    Metrics → RequestLogging → TraceId → CORS
-#    Execution order: CORS → TraceId → RequestLogging → Metrics
+#    Metrics → RequestLogging → TraceId → CORS → SecurityHeaders
+#    Execution order: SecurityHeaders → CORS → TraceId → RequestLogging → Metrics
 app.add_middleware(MetricsMiddleware)  # type: ignore[arg-type]
 app.add_middleware(RequestLoggingMiddleware)  # type: ignore[arg-type]
 app.add_middleware(TraceIdMiddleware)  # type: ignore[arg-type]
@@ -53,6 +54,7 @@ if settings.all_cors_origins:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+app.add_middleware(SecurityHeadersMiddleware)  # type: ignore[arg-type]
 
 # 5. OpenTelemetry (no-op if OTEL_ENABLED=false)
 setup_observability(app)
