@@ -52,6 +52,9 @@ templates.env.globals.update(
         "site_author_url": settings.SITE_AUTHOR_URL,
         "site_author_title": settings.SITE_AUTHOR_TITLE,
         "site_author_bio": settings.SITE_AUTHOR_BIO,
+        "umami_enabled": settings.UMAMI_ENABLED,
+        "umami_host": settings.UMAMI_HOST,
+        "umami_website_id": settings.UMAMI_WEBSITE_ID,
         "current_year": datetime.now(timezone.utc).year,
         "island_asset": island_asset,
     }
