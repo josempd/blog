@@ -10,6 +10,7 @@ from app.schemas.post import (  # noqa: F401
     TagWithCount,
 )
 from app.schemas.project import (  # noqa: F401
+    ProjectDetail,
     ProjectPublic,
     ProjectsPublic,
     ProjectUpsert,
