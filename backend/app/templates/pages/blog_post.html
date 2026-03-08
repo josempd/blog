@@ -87,6 +87,7 @@
 {% endblock %}
 
 {% block scripts %}
+{{ super() }}
 {% if toc and toc | length > 1 %}
     {% set toc_js = island_asset("TableOfContents") %}
     {% if toc_js %}

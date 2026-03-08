@@ -132,9 +132,15 @@ class MetricsMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
         duration_s = time.perf_counter() - start
 
+        route_pattern = request.url.path
+        if hasattr(request, "scope") and "route" in request.scope:
+            route_obj = request.scope["route"]
+            if hasattr(route_obj, "path"):
+                route_pattern = route_obj.path
+
         attrs = {
             "http.method": request.method,
-            "http.route": request.url.path,
+            "http.route": route_pattern,
             "http.status_code": response.status_code,
         }
         metrics["request_count"].add(1, attrs)
