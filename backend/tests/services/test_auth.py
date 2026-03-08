@@ -17,6 +17,7 @@ def test_login_success(db: Session) -> None:
     password = random_lower_string()
     user_in = UserCreate(email=email, password=password)
     crud.create_user(session=db, user_create=user_in)
+    db.commit()
 
     user = auth_service.login(session=db, email=email, password=password)
 
@@ -29,6 +30,7 @@ def test_login_incorrect_password(db: Session) -> None:
     password = random_lower_string()
     user_in = UserCreate(email=email, password=password)
     crud.create_user(session=db, user_create=user_in)
+    db.commit()
 
     with pytest.raises(BadRequestError) as exc_info:
         auth_service.login(session=db, email=email, password=random_lower_string())
@@ -41,6 +43,7 @@ def test_login_inactive_user(db: Session) -> None:
     password = random_lower_string()
     user_in = UserCreate(email=email, password=password, is_active=False)
     crud.create_user(session=db, user_create=user_in)
+    db.commit()
 
     with pytest.raises(BadRequestError) as exc_info:
         auth_service.login(session=db, email=email, password=password)
@@ -53,6 +56,7 @@ def test_recover_password_existing_user(db: Session) -> None:
     password = random_lower_string()
     user_in = UserCreate(email=email, password=password)
     crud.create_user(session=db, user_create=user_in)
+    db.commit()
 
     with (
         patch("app.services.auth.send_email", return_value=None),
@@ -77,6 +81,7 @@ def test_reset_password_valid(db: Session) -> None:
     password = random_lower_string()
     user_in = UserCreate(email=email, password=password)
     crud.create_user(session=db, user_create=user_in)
+    db.commit()
 
     new_password = random_lower_string()
     token = generate_password_reset_token(email=email)
@@ -102,6 +107,7 @@ def test_reset_password_inactive_user(db: Session) -> None:
     password = random_lower_string()
     user_in = UserCreate(email=email, password=password, is_active=False)
     crud.create_user(session=db, user_create=user_in)
+    db.commit()
 
     token = generate_password_reset_token(email=email)
 

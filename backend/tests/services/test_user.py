@@ -20,6 +20,7 @@ def test_create_user_email_conflict(db: Session) -> None:
     password = random_lower_string()
     user_in = UserCreate(email=email, password=password)
     crud.create_user(session=db, user_create=user_in)
+    db.commit()
 
     with pytest.raises(
         ConflictError, match="The user with this email already exists in the system."
@@ -44,6 +45,7 @@ def test_register_user_email_conflict(db: Session) -> None:
     password = random_lower_string()
     user_in = UserCreate(email=email, password=password)
     crud.create_user(session=db, user_create=user_in)
+    db.commit()
 
     with pytest.raises(
         ConflictError, match="The user with this email already exists in the system$"
@@ -61,9 +63,11 @@ def test_update_user_me_email_conflict(db: Session) -> None:
     user1 = crud.create_user(
         session=db, user_create=UserCreate(email=email1, password=password)
     )
+    db.commit()
     user2 = crud.create_user(
         session=db, user_create=UserCreate(email=email2, password=password)
     )
+    db.commit()
 
     with pytest.raises(ConflictError, match="User with this email already exists"):
         user_service.update_user_me(
@@ -79,6 +83,7 @@ def test_update_user_me_own_email_ok(db: Session) -> None:
     user = crud.create_user(
         session=db, user_create=UserCreate(email=email, password=password)
     )
+    db.commit()
 
     updated = user_service.update_user_me(
         session=db,
@@ -95,6 +100,7 @@ def test_update_password_me_wrong_password(db: Session) -> None:
     user = crud.create_user(
         session=db, user_create=UserCreate(email=email, password=password)
     )
+    db.commit()
 
     with pytest.raises(BadRequestError, match="Incorrect password"):
         user_service.update_password_me(
@@ -111,6 +117,7 @@ def test_update_password_me_same_password(db: Session) -> None:
     user = crud.create_user(
         session=db, user_create=UserCreate(email=email, password=password)
     )
+    db.commit()
 
     with pytest.raises(
         BadRequestError, match="New password cannot be the same as the current one"
@@ -130,6 +137,7 @@ def test_delete_user_me_superuser_prevented(db: Session) -> None:
         session=db,
         user_create=UserCreate(email=email, password=password, is_superuser=True),
     )
+    db.commit()
 
     with pytest.raises(
         ForbiddenError, match="Super users are not allowed to delete themselves"
@@ -143,6 +151,7 @@ def test_delete_user_me_success(db: Session) -> None:
     user = crud.create_user(
         session=db, user_create=UserCreate(email=email, password=password)
     )
+    db.commit()
 
     user_service.delete_user_me(session=db, current_user=user)
 
@@ -155,6 +164,7 @@ def test_get_user_by_id_self(db: Session) -> None:
     user = crud.create_user(
         session=db, user_create=UserCreate(email=email, password=password)
     )
+    db.commit()
 
     result = user_service.get_user_by_id(
         session=db, user_id=user.id, requesting_user=user
@@ -168,9 +178,11 @@ def test_get_user_by_id_other_as_normal_user(db: Session) -> None:
     user1 = crud.create_user(
         session=db, user_create=UserCreate(email=random_email(), password=password)
     )
+    db.commit()
     user2 = crud.create_user(
         session=db, user_create=UserCreate(email=random_email(), password=password)
     )
+    db.commit()
 
     with pytest.raises(ForbiddenError, match="The user doesn't have enough privileges"):
         user_service.get_user_by_id(session=db, user_id=user1.id, requesting_user=user2)
@@ -183,6 +195,7 @@ def test_get_user_by_id_not_found(db: Session) -> None:
         session=db,
         user_create=UserCreate(email=email, password=password, is_superuser=True),
     )
+    db.commit()
     nonexistent_id = uuid.uuid4()
 
     with pytest.raises(NotFoundError, match="User not found"):
@@ -209,6 +222,7 @@ def test_delete_user_self_prevented(db: Session) -> None:
         session=db,
         user_create=UserCreate(email=email, password=password, is_superuser=True),
     )
+    db.commit()
 
     with pytest.raises(
         ForbiddenError, match="Super users are not allowed to delete themselves"
