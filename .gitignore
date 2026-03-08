@@ -25,3 +25,6 @@ e2e/playwright-report/
 
 # Islands build output
 backend/app/static/dist/
+
+# Scratch — temporary notes, plans, issue downloads
+scratch/
