@@ -66,6 +66,7 @@ services:
       - "3000:3000"
 
   backend:
+    user: root
     restart: "no"
     ports:
       - "8000:8000"
@@ -94,6 +95,7 @@ services:
       - "1025:1025"
 
   prestart:
+    user: root
     volumes:
       - ./backend:/app/backend
       - ./content:/app/content
