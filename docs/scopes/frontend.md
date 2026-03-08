@@ -7,9 +7,9 @@ Server-rendered UI — Jinja2 templates, page routes, static assets, HTMX intera
 ```
 backend/app/pages/
   deps.py          # Jinja2Templates instance + global template context
+  router.py        # Page router registration
   blog.py          # Blog page routes (list, detail)
-  portfolio.py     # Portfolio page routes
-  about.py         # About page
+  portfolio.py     # Portfolio page routes (projects, about)
 
 backend/app/templates/
   base.html        # Layout: head, nav, main, footer
@@ -28,8 +28,8 @@ islands/           # Svelte 5 source components + Vite config
 ## Dependencies
 
 - **core** — config, deps
-- **blog** — PostService (via page routes)
-- **portfolio** — ProjectService (via page routes)
+- **blog** — services.blog (via page routes)
+- **portfolio** — services.portfolio (via page routes)
 
 ## Testing
 

@@ -5,12 +5,11 @@ Blog domain — post and tag models, schemas, CRUD, services, and API/page route
 ## Key Files
 
 ```
-backend/app/models/post.py         # Post model (title, slug, content, published_at)
-backend/app/models/tag.py          # Tag model, PostTagLink many-to-many
+backend/app/models/post.py         # Post model (title, slug, content, published_at); Tag, PostTagLink
 backend/app/schemas/post.py        # PostUpsert, TagCreate, PostPublic, PostDetail, PostsPublic, TagPublic, TagWithCount
 backend/app/crud/post.py           # Post queries (by slug, paginated list, upsert)
-backend/app/services/post.py       # PostService (create, get, list, sync from content)
-backend/app/api/routes/posts.py    # JSON API endpoints (/api/v1/posts)
+backend/app/services/post.py       # sync_post_from_content (content → DB sync)
+backend/app/services/blog.py       # list_published_posts, get_published_post, search_published_posts, list_tags
 backend/app/pages/blog.py          # HTML page routes (/blog, /blog/:slug)
 ```
 
@@ -21,6 +20,6 @@ backend/app/pages/blog.py          # HTML page routes (/blog, /blog/:slug)
 
 ## Testing
 
-- `backend/tests/api/routes/test_posts.py` — post API integration tests
 - `backend/tests/crud/test_post.py` — post data access unit tests
-- `backend/tests/services/test_post.py` — post business logic tests
+- `backend/tests/services/test_blog_service.py` — blog service tests
+- `backend/tests/pages/test_blog.py` — blog page route tests

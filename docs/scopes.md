@@ -38,6 +38,7 @@ backend/app/initial_data.py                → core
 backend/app/utils.py                       → core
 backend/app/models/base.py                 → core
 backend/app/schemas/common.py              → core
+backend/app/tests_pre_start.py             → core
 
 backend/app/core/security.py               → auth
 backend/app/models/user.py                 → auth
@@ -52,29 +53,32 @@ backend/app/api/routes/private.py          → auth
 
 # Domain
 backend/app/models/post.py                 → blog
-backend/app/models/tag.py                  → blog
 backend/app/schemas/post.py                → blog
 backend/app/crud/post.py                   → blog
 backend/app/services/post.py               → blog
-backend/app/api/routes/posts.py            → blog
+backend/app/services/blog.py               → blog
 
 backend/app/content/**                     → content
+backend/app/content/sync.py                → content
+backend/app/services/content_sync.py       → content
 content/**                                 → content
 
 backend/app/models/project.py              → portfolio
 backend/app/schemas/project.py             → portfolio
 backend/app/crud/project.py                → portfolio
 backend/app/services/project.py            → portfolio
-backend/app/api/routes/projects.py         → portfolio
+backend/app/services/portfolio.py          → portfolio
+backend/app/services/github.py             → portfolio
 
 # Presentation
 backend/app/pages/**                       → frontend
+backend/app/pages/router.py                → frontend
 backend/app/templates/**                   → frontend
 backend/app/static/**                      → frontend
 islands/**                                 → frontend
 
 # Cross-cutting
-backend/app/api/routes/feeds.py            → feeds
+backend/app/pages/feeds.py                 → feeds
 backend/app/templates/feeds/**             → feeds
 
 backend/tests/**                           → tests

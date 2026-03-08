@@ -9,6 +9,9 @@ backend/app/content/
   frontmatter.py   # Parse YAML between --- delimiters → (metadata, body)
   renderer.py      # mistune 3 → HTML with Pygments syntax highlighting + heading anchors
   loader.py        # Scan content/ dir, parse all .md files, return list of dicts
+  sync.py          # Content sync orchestration
+
+backend/app/services/content_sync.py  # Content → DB sync service
 
 content/           # Markdown source files
   posts/           # Blog post .md files

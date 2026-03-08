@@ -10,11 +10,12 @@ backend/tests/
   api/routes/              # API integration tests (TestClient)
   crud/                    # CRUD unit tests (direct Session)
   services/                # Service unit tests
+  content/                 # Content engine unit tests
+  pages/                   # Page route tests
   scripts/                 # Pre-start script tests
   utils/                   # Test helpers (NOT test files)
     utils.py               # random_lower_string, etc.
     user.py                # User creation helpers
-    item.py                # Item creation helpers
 
 e2e/                       # Playwright browser tests
 ```

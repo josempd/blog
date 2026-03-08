@@ -19,6 +19,7 @@ backend/app/api/deps.py         # SessionDep, CurrentUser, service dependency fa
 backend/app/api/main.py         # APIRouter registration
 backend/app/api/routes/utils.py # Health check, utility endpoints
 backend/app/backend_pre_start.py # DB readiness check
+backend/app/tests_pre_start.py   # DB readiness check (test variant)
 backend/app/initial_data.py      # First superuser creation
 backend/app/utils.py             # Shared utility functions
 ```
