@@ -45,8 +45,13 @@ class Settings(BaseSettings):
     # OpenTelemetry
     OTEL_ENABLED: bool = False
     OTEL_SERVICE_NAME: str = "blog-backend"
-    OTEL_EXPORTER_OTLP_ENDPOINT: str = "http://localhost:4317"
+    OTEL_EXPORTER_OTLP_ENDPOINT: str = "http://otel-collector:4317"
     OTEL_METRIC_EXPORT_INTERVAL_MS: int = 60000
+
+    # Analytics (Umami)
+    UMAMI_ENABLED: bool = False
+    UMAMI_HOST: str = ""
+    UMAMI_WEBSITE_ID: str = ""
 
     # Site
     SITE_TITLE: str = "jmpd.sh blog"
