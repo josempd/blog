@@ -1,0 +1,35 @@
+# Version control
+.git
+.gitignore
+
+# Environment and secrets
+.env
+.env.example
+
+# Python
+__pycache__
+*.pyc
+.venv
+app.egg-info
+.mypy_cache
+.ruff_cache
+.coverage
+htmlcov
+
+# Node (islands build has its own COPY)
+node_modules
+
+# Testing
+.pytest_cache
+playwright-report
+e2e
+
+# IDE and tooling
+.claude
+.vscode
+*.md
+!backend/**/*.md
+!content/**/*.md
+
+# Docker
+compose.override.yml
