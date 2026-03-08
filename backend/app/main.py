@@ -1,4 +1,3 @@
-import sentry_sdk
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from fastapi.routing import APIRoute
@@ -23,10 +22,6 @@ setup_logging(
     json_output=settings.LOG_FORMAT == "json",
 )
 
-# 2. Sentry (unchanged)
-if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
-    sentry_sdk.init(dsn=str(settings.SENTRY_DSN), enable_tracing=True)
-
 
 def custom_generate_unique_id(route: APIRoute) -> str:
     if route.tags:
@@ -34,17 +29,17 @@ def custom_generate_unique_id(route: APIRoute) -> str:
     return route.name
 
 
-# 3. Create app
+# 2. Create app
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     generate_unique_id_function=custom_generate_unique_id,
 )
 
-# 4. Exception handlers (RFC 9457 Problem Details)
+# 3. Exception handlers (RFC 9457 Problem Details)
 register_exception_handlers(app)
 
-# 5. Middleware — last-added runs first, so add order is:
+# 4. Middleware — last-added runs first, so add order is:
 #    Metrics → RequestLogging → TraceId → CORS
 #    Execution order: CORS → TraceId → RequestLogging → Metrics
 app.add_middleware(MetricsMiddleware)  # type: ignore[arg-type]
@@ -59,10 +54,10 @@ if settings.all_cors_origins:
         allow_headers=["*"],
     )
 
-# 6. OpenTelemetry (no-op if OTEL_ENABLED=false)
+# 5. OpenTelemetry (no-op if OTEL_ENABLED=false)
 setup_observability(app)
 
-# 7. Routers
+# 6. Routers
 app.include_router(api_router, prefix=settings.API_V1_STR)
 app.include_router(pages_router)
 
