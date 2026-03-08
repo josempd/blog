@@ -18,6 +18,7 @@ def login(*, session: Session, email: str, password: str) -> User:
         raise BadRequestError("Incorrect email or password")
     if not user.is_active:
         raise BadRequestError("Inactive user")
+    session.commit()
     return user
 
 
@@ -50,6 +51,7 @@ def reset_password(*, session: Session, token: str, new_password: str) -> None:
         db_user=user,
         user_in=UserUpdate(password=new_password),
     )
+    session.commit()
 
 
 def get_password_recovery_html(*, session: Session, email: str) -> tuple[str, str]:

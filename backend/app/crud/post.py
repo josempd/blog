@@ -74,6 +74,18 @@ def get_or_create_tag(*, session: Session, data: TagCreate) -> Tag:
     return tag
 
 
+def reconcile_post_tags(
+    *, session: Session, post: Post, tag_creates: list[TagCreate]
+) -> None:
+    """Replace a post's tags with the given set, flushing changes."""
+    post.tags.clear()
+    for data in tag_creates:
+        tag = get_or_create_tag(session=session, data=data)
+        post.tags.append(tag)
+    session.add(post)
+    session.flush()
+
+
 def delete_posts_not_in(*, session: Session, source_paths: set[str]) -> int:
     """Delete posts whose source_path is not in the given set. Returns count deleted."""
     statement = select(Post).where(Post.source_path.is_not(None))  # type: ignore[union-attr]

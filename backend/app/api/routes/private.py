@@ -1,10 +1,10 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from app import crud
 from app.api.deps import SessionDep
 from app.models import User
 from app.schemas import UserCreate, UserPublic
+from app.services import user as user_service
 
 router = APIRouter(tags=["private"], prefix="/private")
 
@@ -26,4 +26,4 @@ def create_user(user_in: PrivateUserCreate, session: SessionDep) -> User:
         password=user_in.password,
         full_name=user_in.full_name,
     )
-    return crud.create_user(session=session, user_create=user_create)
+    return user_service.create_user(session=session, user_in=user_create)

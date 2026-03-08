@@ -35,6 +35,7 @@ def create_user(*, session: Session, user_in: UserCreate) -> User:
         message="The user with this email already exists in the system.",
     )
     user = crud.create_user(session=session, user_create=user_in)
+    session.commit()
     if settings.emails_enabled and user_in.email:
         email_data = generate_new_account_email(
             email_to=user_in.email, username=user_in.email, password=user_in.password
@@ -60,7 +61,9 @@ def register_user(*, session: Session, user_in: UserRegister) -> User:
         message="The user with this email already exists in the system",
     )
     user_create = UserCreate.model_validate(user_in)
-    return crud.create_user(session=session, user_create=user_create)
+    user = crud.create_user(session=session, user_create=user_create)
+    session.commit()
+    return user
 
 
 def get_user_by_id(
@@ -85,7 +88,9 @@ def update_user_me(
             email=user_in.email,
             exclude_user_id=current_user.id,
         )
-    return crud.update_user_me(session=session, user=current_user, user_in=user_in)
+    user = crud.update_user_me(session=session, user=current_user, user_in=user_in)
+    session.commit()
+    return user
 
 
 def update_password_me(
@@ -101,6 +106,7 @@ def update_password_me(
     if current_password == new_password:
         raise BadRequestError("New password cannot be the same as the current one")
     crud.update_password(session=session, user=current_user, new_password=new_password)
+    session.commit()
 
 
 def update_user(*, session: Session, user_id: uuid.UUID, user_in: UserUpdate) -> User:
@@ -113,13 +119,16 @@ def update_user(*, session: Session, user_id: uuid.UUID, user_in: UserUpdate) ->
             email=user_in.email,
             exclude_user_id=user_id,
         )
-    return crud.update_user(session=session, db_user=db_user, user_in=user_in)
+    user = crud.update_user(session=session, db_user=db_user, user_in=user_in)
+    session.commit()
+    return user
 
 
 def delete_user_me(*, session: Session, current_user: User) -> None:
     if current_user.is_superuser:
         raise ForbiddenError("Super users are not allowed to delete themselves")
     crud.delete_user(session=session, user=current_user)
+    session.commit()
 
 
 def delete_user(*, session: Session, user_id: uuid.UUID, requesting_user: User) -> None:
@@ -129,3 +138,4 @@ def delete_user(*, session: Session, user_id: uuid.UUID, requesting_user: User) 
     if user == requesting_user:
         raise ForbiddenError("Super users are not allowed to delete themselves")
     crud.delete_user(session=session, user=user)
+    session.commit()

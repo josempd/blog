@@ -6,7 +6,7 @@ from sqlmodel import Session
 
 from app.content import slugify
 from app.content.loader import ParsedPost
-from app.crud.post import get_or_create_tag, upsert_post
+from app.crud.post import reconcile_post_tags, upsert_post
 from app.schemas.post import PostUpsert, TagCreate
 
 
@@ -28,11 +28,5 @@ def sync_post_from_content(*, session: Session, parsed: ParsedPost) -> None:
         session=session, source_path=parsed.source_path, data=upsert_data
     )
 
-    post.tags.clear()
-    for name in parsed.tags:
-        slug = slugify(name)
-        tag = get_or_create_tag(session=session, data=TagCreate(name=name, slug=slug))
-        post.tags.append(tag)
-
-    session.add(post)
-    session.flush()
+    tag_creates = [TagCreate(name=name, slug=slugify(name)) for name in parsed.tags]
+    reconcile_post_tags(session=session, post=post, tag_creates=tag_creates)
