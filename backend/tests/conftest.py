@@ -44,8 +44,10 @@ def client(db: Session) -> Generator[TestClient, None, None]:
         yield db
 
     app.dependency_overrides[get_db] = _override_get_db
+    app.state.limiter.enabled = False
     with TestClient(app) as c:
         yield c
+    app.state.limiter.enabled = True
     app.dependency_overrides.clear()
 
 

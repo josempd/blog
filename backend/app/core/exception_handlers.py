@@ -10,6 +10,7 @@ import structlog
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from slowapi.errors import RateLimitExceeded
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.responses import Response
 
@@ -57,6 +58,27 @@ def _html_error_response(request: Request, status_code: int) -> Response:
 # ---------------------------------------------------------------------------
 # Handlers
 # ---------------------------------------------------------------------------
+
+
+async def _handle_rate_limit(request: Request, _exc: RateLimitExceeded) -> Response:
+    trace_id = _trace_id_from_request(request)
+    problem = ProblemDetail(
+        title="Too Many Requests",
+        status=429,
+        detail="Rate limit exceeded",
+        trace_id=trace_id,
+    )
+    logger.warning(
+        "rate_limit_exceeded",
+        path=request.url.path,
+        client_ip=request.headers.get(
+            "x-forwarded-for", request.client.host if request.client else "unknown"
+        ),
+        trace_id=trace_id,
+    )
+    if _wants_html(request):
+        return _html_error_response(request, 429)
+    return _problem_response(problem, headers={"Retry-After": "60"})
 
 
 async def _handle_app_error(request: Request, exc: AppError) -> Response:
@@ -140,6 +162,7 @@ async def _handle_unhandled(request: Request, exc: Exception) -> Response:
 
 
 def register_exception_handlers(app: FastAPI) -> None:
+    app.add_exception_handler(RateLimitExceeded, _handle_rate_limit)  # type: ignore[arg-type]
     app.add_exception_handler(AppError, _handle_app_error)  # type: ignore[arg-type]
     app.add_exception_handler(StarletteHTTPException, _handle_starlette_http)  # type: ignore[arg-type]
     app.add_exception_handler(RequestValidationError, _handle_validation_error)  # type: ignore[arg-type]
