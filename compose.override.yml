@@ -55,6 +55,16 @@ services:
     ports:
       - "8080:8080"
 
+  umami-db:
+    restart: "no"
+    ports:
+      - "5433:5432"
+
+  umami:
+    restart: "no"
+    ports:
+      - "3000:3000"
+
   backend:
     restart: "no"
     ports:
@@ -87,6 +97,16 @@ services:
     volumes:
       - ./backend:/app/backend
       - ./content:/app/content
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    restart: "no"
+    volumes:
+      - ./docker/otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "8889:8889"
 
 networks:
   traefik-public:

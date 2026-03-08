@@ -8,13 +8,15 @@ Test suite — pytest integration/unit tests, test fixtures, test utilities, and
 backend/tests/
   conftest.py              # Shared fixtures (db session, client, auth tokens)
   api/routes/              # API integration tests (TestClient)
+  core/                    # Core infrastructure tests (middleware, etc.)
   crud/                    # CRUD unit tests (direct Session)
   services/                # Service unit tests
+  content/                 # Content engine unit tests
+  pages/                   # Page route tests
   scripts/                 # Pre-start script tests
   utils/                   # Test helpers (NOT test files)
     utils.py               # random_lower_string, etc.
     user.py                # User creation helpers
-    item.py                # Item creation helpers
 
 e2e/                       # Playwright browser tests
 ```

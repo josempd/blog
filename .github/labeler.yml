@@ -25,8 +25,11 @@ scope:auth:
           - backend/app/api/routes/login.py
           - backend/app/api/routes/users.py
           - backend/app/api/routes/private.py
-          - backend/app/models.py
-          - backend/app/crud.py
+          - backend/app/models/user.py
+          - backend/app/crud/user.py
+          - backend/app/schemas/auth.py
+          - backend/app/services/user.py
+          - backend/app/services/auth.py
 
 # -- Domain --
 
@@ -34,18 +37,17 @@ scope:blog:
   - changed-files:
       - any-glob-to-any-file:
           - backend/app/models/post.py
-          - backend/app/models/tag.py
           - backend/app/schemas/post.py
-          - backend/app/schemas/tag.py
           - backend/app/crud/post.py
           - backend/app/services/post.py
-          - backend/app/api/routes/posts.py
+          - backend/app/services/blog.py
           - backend/app/pages/blog.py
 
 scope:content:
   - changed-files:
       - any-glob-to-any-file:
           - backend/app/content/**
+          - backend/app/services/content_sync.py
           - content/**
 
 scope:portfolio:
@@ -55,9 +57,9 @@ scope:portfolio:
           - backend/app/schemas/project.py
           - backend/app/crud/project.py
           - backend/app/services/project.py
-          - backend/app/api/routes/projects.py
+          - backend/app/services/portfolio.py
+          - backend/app/services/github.py
           - backend/app/pages/portfolio.py
-          - backend/app/pages/about.py
 
 # -- Presentation --
 
@@ -74,7 +76,6 @@ scope:frontend:
 scope:feeds:
   - changed-files:
       - any-glob-to-any-file:
-          - backend/app/api/routes/feeds.py
           - backend/app/pages/feeds.py
           - backend/app/templates/feeds/**
 
@@ -91,6 +92,7 @@ scope:ci:
           - backend/Dockerfile
           - backend/.dockerignore
           - compose*.yml
+          - docker/**
           - Makefile
           - .pre-commit-config.yaml
           - backend/scripts/**

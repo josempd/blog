@@ -19,6 +19,7 @@ backend/app/api/deps.py         # SessionDep, CurrentUser, service dependency fa
 backend/app/api/main.py         # APIRouter registration
 backend/app/api/routes/utils.py # Health check, utility endpoints
 backend/app/backend_pre_start.py # DB readiness check
+backend/app/tests_pre_start.py   # DB readiness check (test variant)
 backend/app/initial_data.py      # First superuser creation
 backend/app/utils.py             # Shared utility functions
 ```
@@ -29,6 +30,6 @@ None — core is the foundation layer. All other scopes depend on core.
 
 ## Testing
 
+- `backend/tests/core/test_middleware.py` — middleware and IP anonymization tests
 - `backend/tests/scripts/` — pre-start script tests
 - `backend/tests/api/routes/test_utils.py` — health check tests (future)
-- Unit tests for exception handlers, middleware, logging config

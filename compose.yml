@@ -42,6 +42,41 @@ services:
       - traefik.http.routers.${STACK_NAME?Variable not set}-adminer-https.tls.certresolver=le
       - traefik.http.services.${STACK_NAME?Variable not set}-adminer.loadbalancer.server.port=8080
 
+  umami-db:
+    image: postgres:18
+    restart: always
+    volumes:
+      - umami-db-data:/var/lib/postgresql/data/pgdata
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: ${UMAMI_DB_PASSWORD?Variable not set}
+
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    restart: always
+    depends_on:
+      umami-db:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql://umami:${UMAMI_DB_PASSWORD}@umami-db:5432/umami
+    networks:
+      - traefik-public
+      - default
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-public
+      - traefik.constraint-label=traefik-public
+      - traefik.http.routers.${STACK_NAME?Variable not set}-umami-http.rule=Host(`analytics.${DOMAIN?Variable not set}`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-umami-http.entrypoints=http
+      - traefik.http.routers.${STACK_NAME?Variable not set}-umami-http.middlewares=https-redirect
+      - traefik.http.routers.${STACK_NAME?Variable not set}-umami-https.rule=Host(`analytics.${DOMAIN?Variable not set}`)
+      - traefik.http.routers.${STACK_NAME?Variable not set}-umami-https.entrypoints=https
+      - traefik.http.routers.${STACK_NAME?Variable not set}-umami-https.tls=true
+      - traefik.http.routers.${STACK_NAME?Variable not set}-umami-https.tls.certresolver=le
+      - traefik.http.services.${STACK_NAME?Variable not set}-umami.loadbalancer.server.port=3000
+
   prestart:
     image: '${DOCKER_IMAGE_BACKEND?Variable not set}:${TAG-latest}'
     build:
@@ -138,6 +173,7 @@ services:
 
 volumes:
   app-db-data:
+  umami-db-data:
 
 networks:
   traefik-public:

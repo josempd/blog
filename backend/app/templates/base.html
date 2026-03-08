@@ -58,6 +58,10 @@
     {% if search_js %}
     <script type="module" src="{{ search_js }}"></script>
     {% endif %}
-    {% block scripts %}{% endblock %}
+    {% block scripts %}
+    {% if umami_enabled and umami_host and umami_website_id %}
+    <script defer src="{{ umami_host }}/script.js" data-website-id="{{ umami_website_id }}"></script>
+    {% endif %}
+    {% endblock %}
 </body>
 </html>

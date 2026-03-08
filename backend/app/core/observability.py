@@ -79,6 +79,10 @@ def _init_otel(app: FastAPI) -> None:
             "http.server.error.count",
             description="Total HTTP 5xx errors",
         ),
+        "page_view_count": meter.create_counter(
+            "http.server.page_view.count",
+            description="Page view count (non-API, non-static paths)",
+        ),
     }
 
     # --- Auto-instrumentation ---
