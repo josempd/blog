@@ -51,8 +51,8 @@ if settings.all_cors_origins:
         CORSMiddleware,  # type: ignore[arg-type]
         allow_origins=settings.all_cors_origins,
         allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
+        allow_headers=["Authorization", "Content-Type", "Accept"],
     )
 app.add_middleware(SecurityHeadersMiddleware)  # type: ignore[arg-type]
 
