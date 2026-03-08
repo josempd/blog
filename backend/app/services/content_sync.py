@@ -12,7 +12,7 @@ import structlog
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session
 
-from app.content.loader import load_page, load_post, load_project
+from app.content.loader import load_post, load_project
 from app.core.config import settings
 from app.core.exceptions import ContentSyncError
 from app.crud.post import delete_posts_not_in
@@ -130,11 +130,11 @@ def sync_content(*, session: Session, content_dir: Path) -> None:
     if deleted_projects:
         logger.info("orphan_projects_deleted", count=deleted_projects)
 
-    pages = [load_page(f, content_dir) for f in _md_files(content_dir / "pages")]
+    page_files = _md_files(content_dir / "pages")
     logger.info(
         "content_sync_complete",
         posts=synced_posts,
         projects=synced_projects,
         projects_enriched=enriched_projects,
-        pages=len(pages),
+        pages=len(page_files),
     )
