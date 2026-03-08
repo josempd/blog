@@ -1,8 +1,11 @@
 from fastapi import APIRouter, Depends
 from pydantic.networks import EmailStr
+from sqlalchemy.exc import SQLAlchemyError
+from sqlmodel import select
 
-from app.api.deps import get_current_active_superuser
-from app.schemas import Message
+from app.api.deps import SessionDep, get_current_active_superuser
+from app.core.exceptions import ServiceUnavailableError
+from app.schemas import HealthCheckResponse, Message
 from app.utils import generate_test_email, send_email
 
 router = APIRouter(prefix="/utils", tags=["utils"])
@@ -27,5 +30,9 @@ def test_email(email_to: EmailStr) -> Message:
 
 
 @router.get("/health-check/")
-async def health_check() -> bool:
-    return True
+def health_check(session: SessionDep) -> HealthCheckResponse:
+    try:
+        session.exec(select(1))
+    except SQLAlchemyError as exc:
+        raise ServiceUnavailableError("Database is not reachable") from exc
+    return HealthCheckResponse(status="healthy")

@@ -55,7 +55,10 @@ def test_request_log_enriched_fields(client: TestClient) -> None:
     """logger.info is called with referrer, user_agent, client_ip, content_length."""
     mock_logger = MagicMock()
 
-    with patch("app.core.middleware.logger", mock_logger):
+    with (
+        patch("app.core.middleware._SKIP_LOG_PATHS", frozenset()),
+        patch("app.core.middleware.logger", mock_logger),
+    ):
         client.get(
             "/api/v1/utils/health-check/",
             headers={
@@ -78,7 +81,10 @@ def test_request_log_event_name(client: TestClient) -> None:
     """The log event name is 'request_finished'."""
     mock_logger = MagicMock()
 
-    with patch("app.core.middleware.logger", mock_logger):
+    with (
+        patch("app.core.middleware._SKIP_LOG_PATHS", frozenset()),
+        patch("app.core.middleware.logger", mock_logger),
+    ):
         client.get("/api/v1/utils/health-check/")
 
     mock_logger.info.assert_called_once()
@@ -90,7 +96,10 @@ def test_request_log_method_path_status(client: TestClient) -> None:
     """method, path, status, and duration_ms are all present in the log call."""
     mock_logger = MagicMock()
 
-    with patch("app.core.middleware.logger", mock_logger):
+    with (
+        patch("app.core.middleware._SKIP_LOG_PATHS", frozenset()),
+        patch("app.core.middleware.logger", mock_logger),
+    ):
         client.get("/api/v1/utils/health-check/")
 
     call_kwargs = mock_logger.info.call_args.kwargs
@@ -114,7 +123,7 @@ def test_health_endpoint_skipped(client: TestClient) -> None:
 
 def test_health_variants_skipped(client: TestClient) -> None:
     """All health/readiness probe paths are skipped."""
-    skip_paths = ["/healthz", "/ready", "/readiness"]
+    skip_paths = ["/healthz", "/ready", "/readiness", "/api/v1/utils/health-check/"]
     mock_logger = MagicMock()
 
     with patch("app.core.middleware.logger", mock_logger):
@@ -128,7 +137,10 @@ def test_x_forwarded_for_used_for_client_ip(client: TestClient) -> None:
     """X-Forwarded-For header is anonymized and used as client_ip."""
     mock_logger = MagicMock()
 
-    with patch("app.core.middleware.logger", mock_logger):
+    with (
+        patch("app.core.middleware._SKIP_LOG_PATHS", frozenset()),
+        patch("app.core.middleware.logger", mock_logger),
+    ):
         client.get(
             "/api/v1/utils/health-check/",
             headers={"X-Forwarded-For": "203.0.113.195, 70.41.3.18"},
