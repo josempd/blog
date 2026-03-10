@@ -1,4 +1,4 @@
-# jmpd.dev
+# jmpd.sh blog
 
 Personal blog and portfolio — built with FastAPI, HTMX, and a Markdown content engine.
 

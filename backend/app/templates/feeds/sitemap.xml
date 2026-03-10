@@ -4,6 +4,7 @@
     <url><loc>{{ base_url }}blog</loc></url>
     <url><loc>{{ base_url }}projects</loc></url>
     <url><loc>{{ base_url }}about</loc></url>
+    <url><loc>{{ base_url }}privacy</loc></url>
     {% for post in posts %}
     <url>
         <loc>{{ base_url }}blog/{{ post.slug }}</loc>

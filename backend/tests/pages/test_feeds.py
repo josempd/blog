@@ -135,3 +135,9 @@ def test_sitemap_contains_static_pages(client: TestClient) -> None:
         and loc.rstrip("/").endswith("/projects")
         for loc in locs
     )
+    assert any(
+        "/privacy" in (loc or "")
+        and loc is not None
+        and loc.rstrip("/").endswith("/privacy")
+        for loc in locs
+    )

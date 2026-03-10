@@ -11,6 +11,10 @@ This site uses [Umami](https://umami.is/), a self-hosted, open-source analytics 
 
 There are no advertising networks, social media pixels, or external tracking scripts on this site. No data is sent to Google, Meta, or any other third party.
 
+## Server Logs
+
+The web server records request logs for operational purposes. IP addresses are anonymised (last octet zeroed) before being written to any log. Log entries are rotated and deleted automatically.
+
 ## Data Retention
 
 Anonymised analytics events are retained for 12 months, after which they are deleted automatically.
