@@ -39,7 +39,11 @@ test.describe("Heading hierarchy", () => {
   });
 
   test("blog post page has exactly one h1", async ({ page }) => {
-    await page.goto("/blog/hello-world");
+    await page.goto("/blog");
+    const postLink = page.locator("article a[href^='/blog/']").first();
+    if (await postLink.count() === 0) { test.skip("No published posts"); return; }
+    const href = await postLink.getAttribute("href");
+    await page.goto(href!);
     const h1Count = await page.locator("h1").count();
     expect(h1Count).toBe(1);
   });
@@ -71,7 +75,11 @@ test.describe("ARIA landmarks and labels", () => {
   });
 
   test("all nav elements have aria-label on blog post page", async ({ page }) => {
-    await page.goto("/blog/hello-world");
+    await page.goto("/blog");
+    const postLink = page.locator("article a[href^='/blog/']").first();
+    if (await postLink.count() === 0) { test.skip("No published posts"); return; }
+    const href = await postLink.getAttribute("href");
+    await page.goto(href!);
     const navs = page.locator("nav");
     const count = await navs.count();
     for (let i = 0; i < count; i++) {
@@ -106,7 +114,11 @@ test.describe("Images", () => {
   });
 
   test("all images on blog post have alt attribute", async ({ page }) => {
-    await page.goto("/blog/hello-world");
+    await page.goto("/blog");
+    const postLink = page.locator("article a[href^='/blog/']").first();
+    if (await postLink.count() === 0) { test.skip("No published posts"); return; }
+    const href = await postLink.getAttribute("href");
+    await page.goto(href!);
     const images = page.locator("img");
     const count = await images.count();
     for (let i = 0; i < count; i++) {
