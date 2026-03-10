@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="/static/css/components.css">
     <link rel="stylesheet" href="/static/css/syntax.css">
     <link rel="stylesheet" href="/static/css/utilities.css">
+    <link rel="stylesheet" href="/static/css/print.css" media="print">
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -53,6 +54,7 @@
     {% include "partials/footer.html" %}
     <script src="/static/js/htmx.min.js"></script>
     <script src="/static/js/theme.js"></script>
+    <script src="/static/js/nav.js"></script>
     <script src="/static/js/contact.js"></script>
     {% set search_js = island_asset("SearchDialog") %}
     {% if search_js %}
