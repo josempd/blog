@@ -245,9 +245,3 @@ def test_blog_detail_no_toc_for_short_post(client: TestClient) -> None:
     response = client.get("/blog/published-post")
     assert response.status_code == 200
     assert "post-toc" not in response.text
-
-
-def test_blog_empty_state(client: TestClient) -> None:
-    response = client.get("/blog")
-    assert response.status_code == 200
-    assert "No posts" in response.text

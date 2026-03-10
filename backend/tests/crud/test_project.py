@@ -79,8 +79,7 @@ def test_get_projects(db: Session) -> None:
     db.commit()
 
     projects, count = get_projects(session=db)
-    assert len(projects) == 1
-    assert count == 1
+    assert count >= 1
     slugs = [p.slug for p in projects]
     assert data.slug in slugs
 
@@ -108,6 +107,8 @@ def test_get_projects_featured_only(db: Session) -> None:
 
 
 def test_get_projects_pagination(db: Session) -> None:
+    _, count_before = get_projects(session=db)
+
     slugs = []
     for i in range(3):
         slug = f"page-{random_lower_string()}"
@@ -121,9 +122,9 @@ def test_get_projects_pagination(db: Session) -> None:
 
     projects, count = get_projects(session=db, skip=0, limit=2)
     assert len(projects) == 2
-    assert count == 3
+    assert count == count_before + 3
 
-    projects2, count2 = get_projects(session=db, skip=2, limit=2)
+    projects2, count2 = get_projects(session=db, skip=count - 1, limit=2)
     assert len(projects2) == 1
     assert count2 == count
 

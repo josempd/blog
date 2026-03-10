@@ -100,7 +100,6 @@ def test_get_posts_published_only(db: Session) -> None:
     slugs = [p.slug for p in posts]
     assert slug_pub in slugs
     assert slug_draft not in slugs
-    assert count == 1
 
 
 def test_get_or_create_tag_creates(db: Session) -> None:

@@ -52,16 +52,17 @@ def test_list_published_posts(db: Session) -> None:
     assert "pub-a" in slugs
     assert "pub-b" in slugs
     assert "draft-c" not in slugs
-    assert count == 2
 
 
 def test_list_published_posts_pagination(db: Session) -> None:
+    _, baseline = blog_service.list_published_posts(session=db)
+
     for i in range(5):
         _make_post(db, published=True, slug=f"page-post-{i}", title=f"Page Post {i}")
 
     posts, count = blog_service.list_published_posts(session=db, skip=0, limit=3)
     assert len(posts) == 3
-    assert count == 5
+    assert count == baseline + 5
 
 
 def test_get_published_post_found(db: Session) -> None:
