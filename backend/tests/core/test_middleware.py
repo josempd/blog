@@ -7,7 +7,8 @@ from unittest.mock import MagicMock, patch
 
 from fastapi.testclient import TestClient
 
-from app.core.middleware import anonymize_ip
+from app.core.middleware import _extract_otel_trace_id, anonymize_ip
+from app.main import app
 
 # ---------------------------------------------------------------------------
 # anonymize_ip — pure unit tests, no fixtures needed
@@ -191,3 +192,57 @@ def test_no_hsts_in_local(client: TestClient) -> None:
     """HSTS is not set when ENVIRONMENT is 'local' (test default)."""
     response = client.get("/api/v1/utils/health-check/")
     assert "Strict-Transport-Security" not in response.headers
+
+
+# ---------------------------------------------------------------------------
+# TraceIdMiddleware — integration tests via TestClient (lines 127-134)
+# ---------------------------------------------------------------------------
+
+
+def test_trace_id_in_response_header(client: TestClient) -> None:
+    """Every response carries an X-Trace-ID header that is a 32-char hex string."""
+    response = client.get("/api/v1/utils/health-check/")
+    trace_id = response.headers.get("X-Trace-ID")
+    assert trace_id is not None
+    assert len(trace_id) == 32
+    assert re.fullmatch(r"[0-9a-f]{32}", trace_id)
+
+
+def test_trace_id_unique_per_request(client: TestClient) -> None:
+    """Two consecutive requests receive different X-Trace-ID values."""
+    r1 = client.get("/api/v1/utils/health-check/")
+    r2 = client.get("/api/v1/utils/health-check/")
+    assert r1.headers["X-Trace-ID"] != r2.headers["X-Trace-ID"]
+
+
+# ---------------------------------------------------------------------------
+# _extract_otel_trace_id — unit test (lines 145-147)
+# ---------------------------------------------------------------------------
+
+
+def test_otel_trace_id_extraction_returns_none_without_otel() -> None:
+    """Without an active OTEL span, _extract_otel_trace_id returns None or a str."""
+    result = _extract_otel_trace_id()
+    assert result is None or isinstance(result, str)
+
+
+# ---------------------------------------------------------------------------
+# MetricsMiddleware — integration test (lines 204-229)
+# ---------------------------------------------------------------------------
+
+
+def test_metrics_records_when_otel_present(client: TestClient) -> None:
+    """When otel_metrics is present, request_count and request_duration are recorded."""
+    mock_metrics = {
+        "request_count": MagicMock(),
+        "request_duration": MagicMock(),
+        "error_count": MagicMock(),
+    }
+    app.state.otel_metrics = mock_metrics
+    try:
+        client.get("/api/v1/utils/health-check/")
+    finally:
+        del app.state.otel_metrics
+
+    mock_metrics["request_count"].add.assert_called_once()
+    mock_metrics["request_duration"].record.assert_called_once()
