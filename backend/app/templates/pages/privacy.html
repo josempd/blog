@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy &mdash; {{ site_title }}{% endblock %}
+{% block description %}{{ site_description }}{% endblock %}
+{% block og_title %}Privacy Policy{% endblock %}
+{% block og_description %}{{ site_description }}{% endblock %}
+{% block canonical %}{{ site_url }}/privacy{% endblock %}
+{% block og_url %}{{ site_url }}/privacy{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Privacy Policy</h1>
+</div>
+<div class="prose post-body">
+    {{ page.content_html | safe }}
+</div>
+{% endblock %}

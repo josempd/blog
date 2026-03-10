@@ -27,3 +27,13 @@ async def about(request: Request):
         "pages/about.html",
         {"page": page},
     )
+
+
+@router.get("/privacy")
+async def privacy(request: Request):
+    page = portfolio_service.get_privacy_page(content_dir=content_dir())
+    return templates.TemplateResponse(
+        request,
+        "pages/privacy.html",
+        {"page": page},
+    )

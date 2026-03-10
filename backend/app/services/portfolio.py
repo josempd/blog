@@ -24,3 +24,11 @@ def get_about_page(*, content_dir: Path) -> ParsedPage:
         return load_page(file_path, content_dir)
     except (FileNotFoundError, ValueError) as exc:
         raise NotFoundError("Page", "about") from exc
+
+
+def get_privacy_page(*, content_dir: Path) -> ParsedPage:
+    file_path = content_dir / "pages" / "privacy.md"
+    try:
+        return load_page(file_path, content_dir)
+    except (FileNotFoundError, ValueError) as exc:
+        raise NotFoundError("Page", "privacy") from exc
