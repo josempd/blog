@@ -1,0 +1,89 @@
+/* ==========================================================================
+   Print Stylesheet
+   Loaded via <link media="print"> — no @media wrapper needed
+   ========================================================================== */
+
+/* Reset & layout */
+body {
+  color: #000;
+  background: #fff;
+  font-size: 12pt;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 100%;
+  padding: 0;
+}
+
+.post-layout {
+  display: block;
+}
+
+/* Hide non-content elements */
+.site-header,
+.site-footer,
+.post-sidebar,
+#search-island,
+.search-overlay,
+.search-dialog,
+.skip-link,
+.tag-list,
+.load-more,
+.nav-menu-toggle,
+#toc-island {
+  display: none !important;
+}
+
+/* Show URLs for external links only */
+a[href]::after {
+  content: " (" attr(href) ")";
+  font-size: 0.85em;
+  color: #666;
+}
+
+a[href^="/"]::after,
+a[href^="#"]::after,
+.site-title::after,
+.tag::after,
+.btn::after,
+.hero__cta::after {
+  content: none;
+}
+
+/* Code blocks */
+pre {
+  white-space: pre-wrap;
+  word-break: break-all;
+  border: 1px solid #ddd;
+}
+
+.highlight pre,
+.prose pre,
+.prose code,
+code {
+  background-color: transparent !important;
+}
+
+/* Page breaks */
+h1, h2, h3 {
+  break-after: avoid;
+}
+
+pre, .project-card, .post-card, img {
+  break-inside: avoid;
+}
+
+/* Decorative cleanup */
+* {
+  box-shadow: none !important;
+}
+
+.hero {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+  background-color: transparent;
+  border-bottom: 1px solid #ddd;
+}

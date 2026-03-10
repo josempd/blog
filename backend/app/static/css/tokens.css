@@ -97,3 +97,16 @@ video {
   --color-surface: #111827;
   --color-surface-subtle: #1e1e1e;
 }
+
+/* ==========================================================================
+   Small Screen Overrides
+   ========================================================================== */
+
+@media (max-width: 39.999rem) {
+  :root {
+    --text-3xl: 1.5rem;
+    --text-2xl: 1.25rem;
+    --space-7: 2rem;
+    --space-8: 2.5rem;
+  }
+}
