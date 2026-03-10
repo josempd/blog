@@ -9,6 +9,7 @@ from app.crud.post import (
     get_post_by_slug,
     get_posts,
     get_tags_with_counts,
+    search_posts,
     upsert_post,
 )
 from app.schemas.post import PostUpsert, TagCreate
@@ -229,3 +230,55 @@ def test_get_posts_filtered_by_tag(db: Session) -> None:
     assert tagged_slug in slugs
     assert untagged_slug not in slugs
     assert count == 1
+
+
+def test_search_escapes_percent(db: Session) -> None:
+    upsert_post(
+        session=db,
+        source_path="posts/percent.md",
+        data=_post_data(
+            title="100% Complete",
+            slug=f"percent-{random_lower_string()}",
+            published=True,
+        ),
+    )
+    upsert_post(
+        session=db,
+        source_path=f"posts/other-{random_lower_string()}.md",
+        data=_post_data(title=f"Other Post {random_lower_string()}", published=True),
+    )
+    db.commit()
+
+    results = search_posts(session=db, query="%")
+    titles = [p.title for p in results]
+    assert "100% Complete" in titles
+    assert all("%" in t for t in titles)
+
+
+def test_search_escapes_underscore(db: Session) -> None:
+    slug = f"myvar-{random_lower_string()}"
+    upsert_post(
+        session=db,
+        source_path=f"posts/{slug}.md",
+        data=_post_data(title="my_var guide", slug=slug, published=True),
+    )
+    db.commit()
+
+    results = search_posts(session=db, query="_")
+    titles = [p.title for p in results]
+    assert "my_var guide" in titles
+    assert all("_" in t for t in titles)
+
+
+def test_search_escapes_backslash(db: Session) -> None:
+    slug = f"cpath-{random_lower_string()}"
+    upsert_post(
+        session=db,
+        source_path=f"posts/{slug}.md",
+        data=_post_data(title="C:\\Users Path", slug=slug, published=True),
+    )
+    db.commit()
+
+    results = search_posts(session=db, query="\\")
+    titles = [p.title for p in results]
+    assert "C:\\Users Path" in titles

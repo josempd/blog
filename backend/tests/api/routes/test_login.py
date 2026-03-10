@@ -1,9 +1,13 @@
+from datetime import datetime, timedelta, timezone
 from unittest.mock import patch
+from uuid import uuid4
 
+import jwt as pyjwt
 from fastapi.testclient import TestClient
 from pwdlib.hashers.bcrypt import BcryptHasher
 from sqlmodel import Session
 
+from app.core import security
 from app.core.config import settings
 from app.core.security import get_password_hash, verify_password
 from app.crud import create_user
@@ -162,6 +166,69 @@ def test_login_with_bcrypt_password_upgrades_to_argon2(
     assert verified
     # Should not need another update since it's already argon2
     assert updated_hash is None
+
+
+def test_expired_jwt_returns_401(client: TestClient) -> None:
+    expired_payload = {
+        "exp": datetime.now(timezone.utc) - timedelta(hours=1),
+        "sub": str(uuid4()),
+    }
+    expired_token = pyjwt.encode(
+        expired_payload, settings.SECRET_KEY, algorithm=security.ALGORITHM
+    )
+    r = client.post(
+        f"{settings.API_V1_STR}/login/test-token",
+        headers={"Authorization": f"Bearer {expired_token}"},
+    )
+    assert r.status_code == 401
+
+
+def test_malformed_jwt_returns_401(client: TestClient) -> None:
+    r = client.post(
+        f"{settings.API_V1_STR}/login/test-token",
+        headers={"Authorization": "Bearer not-a-real-jwt"},
+    )
+    assert r.status_code == 401
+
+
+def test_jwt_nonexistent_user_returns_404(client: TestClient) -> None:
+    valid_payload = {
+        "exp": datetime.now(timezone.utc) + timedelta(hours=1),
+        "sub": str(uuid4()),
+    }
+    valid_token = pyjwt.encode(
+        valid_payload, settings.SECRET_KEY, algorithm=security.ALGORITHM
+    )
+    r = client.post(
+        f"{settings.API_V1_STR}/login/test-token",
+        headers={"Authorization": f"Bearer {valid_token}"},
+    )
+    assert r.status_code == 404
+
+
+def test_inactive_user_returns_400(client: TestClient, db: Session) -> None:
+    user = User(
+        email=random_email(),
+        hashed_password=get_password_hash("testpass"),
+        is_active=False,
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+
+    token = pyjwt.encode(
+        {
+            "exp": datetime.now(timezone.utc) + timedelta(hours=1),
+            "sub": str(user.id),
+        },
+        settings.SECRET_KEY,
+        algorithm=security.ALGORITHM,
+    )
+    r = client.post(
+        f"{settings.API_V1_STR}/login/test-token",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert r.status_code == 400
 
 
 def test_login_with_argon2_password_keeps_hash(client: TestClient, db: Session) -> None:
