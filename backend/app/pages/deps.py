@@ -64,6 +64,10 @@ templates.env.globals.update(
 def _rfc822_filter(dt: datetime) -> str:
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
+    # Normalise to stdlib timezone.utc — format_datetime(usegmt=True) rejects
+    # other UTC-equivalent tzinfos such as zoneinfo.ZoneInfo("Etc/UTC").
+    if dt.utcoffset() is not None and dt.utcoffset().total_seconds() == 0:  # type: ignore[union-attr]
+        dt = dt.replace(tzinfo=timezone.utc)
     return format_datetime(dt, usegmt=True)
 
 
