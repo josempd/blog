@@ -1,5 +1,5 @@
 from collections.abc import Generator
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from fastapi.testclient import TestClient
 from sqlalchemy.exc import OperationalError
@@ -33,3 +33,37 @@ def test_health_check_db_unreachable_returns_503(client: TestClient) -> None:
     body = r.json()
     assert body["title"] == "Service Unavailable"
     assert "Database is not reachable" in body["detail"]
+
+
+def test_test_email_success(
+    client: TestClient, superuser_token_headers: dict[str, str]
+) -> None:
+    with patch("app.utils.send_email"):
+        r = client.post(
+            f"{settings.API_V1_STR}/utils/test-email/",
+            params={"email_to": "test@example.com"},
+            headers=superuser_token_headers,
+        )
+    assert r.status_code == 201
+    assert r.json() == {"message": "Test email sent"}
+
+
+def test_test_email_requires_superuser(
+    client: TestClient, normal_user_token_headers: dict[str, str]
+) -> None:
+    with patch("app.utils.send_email"):
+        r = client.post(
+            f"{settings.API_V1_STR}/utils/test-email/",
+            params={"email_to": "test@example.com"},
+            headers=normal_user_token_headers,
+        )
+    assert r.status_code == 403
+
+
+def test_test_email_rejects_unauthenticated(client: TestClient) -> None:
+    with patch("app.utils.send_email"):
+        r = client.post(
+            f"{settings.API_V1_STR}/utils/test-email/",
+            params={"email_to": "test@example.com"},
+        )
+    assert r.status_code == 401
