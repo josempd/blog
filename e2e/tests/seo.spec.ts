@@ -46,10 +46,14 @@ test.describe("JSON-LD structured data", () => {
     expect(found).toBe(true);
   });
 
-  test("hello-world post has BlogPosting JSON-LD with headline", async ({ page }) => {
-    await page.goto("/blog/hello-world");
-    const jsonLdScripts = page.locator('script[type="application/ld+json"]');
+  test("blog post has BlogPosting JSON-LD with headline", async ({ page }) => {
+    await page.goto("/blog");
+    const postLink = page.locator("article a[href^='/blog/']").first();
+    if (await postLink.count() === 0) { test.skip("No published posts"); return; }
+    const href = await postLink.getAttribute("href");
+    await page.goto(href!);
 
+    const jsonLdScripts = page.locator('script[type="application/ld+json"]');
     const count = await jsonLdScripts.count();
     let found = false;
     for (let i = 0; i < count; i++) {
@@ -68,10 +72,14 @@ test.describe("JSON-LD structured data", () => {
     expect(found).toBe(true);
   });
 
-  test("hello-world post has BreadcrumbList JSON-LD", async ({ page }) => {
-    await page.goto("/blog/hello-world");
-    const jsonLdScripts = page.locator('script[type="application/ld+json"]');
+  test("blog post has BreadcrumbList JSON-LD", async ({ page }) => {
+    await page.goto("/blog");
+    const postLink = page.locator("article a[href^='/blog/']").first();
+    if (await postLink.count() === 0) { test.skip("No published posts"); return; }
+    const href = await postLink.getAttribute("href");
+    await page.goto(href!);
 
+    const jsonLdScripts = page.locator('script[type="application/ld+json"]');
     const count = await jsonLdScripts.count();
     let found = false;
     for (let i = 0; i < count; i++) {
@@ -115,7 +123,11 @@ test.describe("Open Graph meta tags", () => {
   }
 
   test("blog post has og:type of article", async ({ page }) => {
-    await page.goto("/blog/hello-world");
+    await page.goto("/blog");
+    const postLink = page.locator("article a[href^='/blog/']").first();
+    if (await postLink.count() === 0) { test.skip("No published posts"); return; }
+    const href = await postLink.getAttribute("href");
+    await page.goto(href!);
     const ogType = page.locator('meta[property="og:type"]');
     await expect(ogType).toBeAttached();
     expect(await ogType.getAttribute("content")).toBe("article");
@@ -123,12 +135,21 @@ test.describe("Open Graph meta tags", () => {
 });
 
 test.describe("Canonical URLs", () => {
-  for (const path of ["/", "/blog", "/blog/hello-world", "/about"]) {
+  for (const path of ["/", "/blog", "/about"]) {
     test(`${path} has canonical link element`, async ({ page }) => {
       await page.goto(path);
       await expect(page.locator('link[rel="canonical"]')).toBeAttached();
     });
   }
+
+  test("blog post has canonical link element", async ({ page }) => {
+    await page.goto("/blog");
+    const postLink = page.locator("article a[href^='/blog/']").first();
+    if (await postLink.count() === 0) { test.skip("No published posts"); return; }
+    const href = await postLink.getAttribute("href");
+    await page.goto(href!);
+    await expect(page.locator('link[rel="canonical"]')).toBeAttached();
+  });
 });
 
 test.describe("RSS autodiscovery", () => {

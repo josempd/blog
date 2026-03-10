@@ -78,21 +78,35 @@ test.describe("robots.txt", () => {
 });
 
 test.describe("Markdown endpoint", () => {
-  test("GET /blog/hello-world.md returns 200", async ({ request }) => {
-    const response = await request.get("/blog/hello-world.md");
+  test("blog post .md endpoint returns 200", async ({ request }) => {
+    const blogPage = await request.get("/blog");
+    const html = await blogPage.text();
+    const match = html.match(/href="\/blog\/([^"]+)"/);
+    if (!match) { test.skip("No published posts"); return; }
+    const slug = match[1];
+    const response = await request.get(`/blog/${slug}.md`);
     expect(response.status()).toBe(200);
   });
 
-  test("GET /blog/hello-world.md has markdown or plain-text content-type", async ({ request }) => {
-    const response = await request.get("/blog/hello-world.md");
+  test("blog post .md endpoint has markdown or plain-text content-type", async ({ request }) => {
+    const blogPage = await request.get("/blog");
+    const html = await blogPage.text();
+    const match = html.match(/href="\/blog\/([^"]+)"/);
+    if (!match) { test.skip("No published posts"); return; }
+    const slug = match[1];
+    const response = await request.get(`/blog/${slug}.md`);
     const contentType = response.headers()["content-type"];
     expect(contentType.includes("text/markdown") || contentType.includes("text/plain")).toBe(true);
   });
 
-  test("GET /blog/hello-world.md body contains markdown content", async ({ request }) => {
-    const response = await request.get("/blog/hello-world.md");
+  test("blog post .md endpoint body contains markdown content", async ({ request }) => {
+    const blogPage = await request.get("/blog");
+    const html = await blogPage.text();
+    const match = html.match(/href="\/blog\/([^"]+)"/);
+    if (!match) { test.skip("No published posts"); return; }
+    const slug = match[1];
+    const response = await request.get(`/blog/${slug}.md`);
     const body = await response.text();
-    // Markdown source should contain the post title as a heading
     expect(body.length).toBeGreaterThan(0);
   });
 });

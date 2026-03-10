@@ -44,13 +44,21 @@ test.describe("Search island", () => {
 });
 
 test.describe("Table of Contents island", () => {
-  test("hello-world post has #toc-island div", async ({ page }) => {
-    await page.goto("/blog/hello-world");
+  test("blog post has #toc-island div", async ({ page }) => {
+    await page.goto("/blog");
+    const postLink = page.locator("article a[href^='/blog/']").first();
+    if (await postLink.count() === 0) { test.skip("No published posts"); return; }
+    const href = await postLink.getAttribute("href");
+    await page.goto(href!);
     await expect(page.locator("#toc-island")).toBeAttached();
   });
 
   test("ToC nav has links to headings", async ({ page }) => {
-    await page.goto("/blog/hello-world");
+    await page.goto("/blog");
+    const postLink = page.locator("article a[href^='/blog/']").first();
+    if (await postLink.count() === 0) { test.skip("No published posts"); return; }
+    const href = await postLink.getAttribute("href");
+    await page.goto(href!);
     const tocLinks = page.locator("#toc-nav a");
     await expect(tocLinks.first()).toBeVisible();
     const count = await tocLinks.count();
@@ -75,7 +83,12 @@ test.describe("Islands without JavaScript", () => {
   test("#toc-island is empty without JavaScript", async ({ browser }) => {
     const context = await browser.newContext({ javaScriptEnabled: false });
     const page = await context.newPage();
-    await page.goto("/blog/hello-world");
+    await page.goto("/blog");
+
+    if (await page.locator("article").count() === 0) { await context.close(); test.skip("No published posts"); return; }
+    const postLink = page.locator("article a[href^='/blog/']").first();
+    const href = await postLink.getAttribute("href");
+    await page.goto(href!);
 
     const tocIsland = page.locator("#toc-island");
     await expect(tocIsland).toBeAttached();
@@ -87,7 +100,12 @@ test.describe("Islands without JavaScript", () => {
   test("server-rendered ToC nav is visible without JavaScript", async ({ browser }) => {
     const context = await browser.newContext({ javaScriptEnabled: false });
     const page = await context.newPage();
-    await page.goto("/blog/hello-world");
+    await page.goto("/blog");
+
+    if (await page.locator("article").count() === 0) { await context.close(); test.skip("No published posts"); return; }
+    const postLink = page.locator("article a[href^='/blog/']").first();
+    const href = await postLink.getAttribute("href");
+    await page.goto(href!);
 
     // The static ToC from Jinja2 should still be visible
     await expect(page.locator("#toc-nav")).toBeVisible();

@@ -98,6 +98,20 @@ def test_about_has_canonical(client: TestClient) -> None:
     assert "/about" in response.text
 
 
+def test_privacy_page(client: TestClient) -> None:
+    response = client.get("/privacy")
+    assert response.status_code == 200
+    assert "text/html" in response.headers["content-type"]
+    assert "Privacy Policy" in response.text
+
+
+def test_privacy_has_canonical(client: TestClient) -> None:
+    response = client.get("/privacy")
+    assert response.status_code == 200
+    assert 'rel="canonical"' in response.text
+    assert "/privacy" in response.text
+
+
 def test_project_card_renders_github_metadata(client: TestClient, db: Session) -> None:
     project = _make_project(db)
     project.github_stars = 42
