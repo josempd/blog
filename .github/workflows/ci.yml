@@ -11,7 +11,7 @@ jobs:
       run:
         working-directory: islands
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version: 22
@@ -24,7 +24,7 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
@@ -70,7 +70,7 @@ jobs:
       SMTP_PASSWORD: ""
       EMAILS_FROM_EMAIL: test@example.com
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version: 22
@@ -97,7 +97,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version: 22
