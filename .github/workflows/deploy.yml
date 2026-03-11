@@ -39,11 +39,12 @@ jobs:
 
             echo "==> Waiting for health check..."
             for i in $(seq 1 30); do
-              if curl -sf http://localhost:8000/api/v1/utils/health-check/ > /dev/null 2>&1; then
-                echo "==> Health check passed (attempt $i)"
+              status=$(docker inspect --format='{{.State.Health.Status}}' blog-backend-1 2>/dev/null || echo "starting")
+              if [ "$status" = "healthy" ]; then
+                echo "==> Container healthy (attempt $i)"
                 exit 0
               fi
-              echo "Waiting... ($i/30)"
+              echo "Waiting... ($i/30, status: $status)"
               sleep 5
             done
 
