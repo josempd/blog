@@ -173,6 +173,7 @@
 
 .post-sidebar {
   order: -1;
+  margin-top: var(--space-5);
 }
 
 .post-content {
@@ -187,6 +188,7 @@
 
   .post-sidebar {
     order: 0;
+    margin-top: 0;
   }
 
   .post-toc {
