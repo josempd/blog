@@ -82,7 +82,7 @@ jobs:
         with:
           enable-cache: true
       - run: uv sync
-      - run: uv run alembic -c app/alembic.ini upgrade head
+      - run: uv run alembic upgrade head
       - run: uv run python app/initial_data.py
       - run: uv run coverage run -m pytest tests/
       - run: uv run coverage report --fail-under=50
