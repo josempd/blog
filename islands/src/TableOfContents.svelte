@@ -39,7 +39,9 @@
       const id = a.getAttribute("href").slice(1);
       if (id === activeId) {
         a.classList.add("toc-active");
-        a.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        if (navEl.scrollHeight > navEl.clientHeight) {
+          a.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        }
       } else {
         a.classList.remove("toc-active");
       }
