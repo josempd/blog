@@ -60,7 +60,7 @@ jobs:
       POSTGRES_PORT: "5432"
       PROJECT_NAME: blog-ci
       DOMAIN: localhost
-      ENVIRONMENT: development
+      ENVIRONMENT: local
       SECRET_KEY: ci-test-secret-key
       FIRST_SUPERUSER: admin@example.com
       FIRST_SUPERUSER_PASSWORD: ci-admin-password
