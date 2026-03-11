@@ -38,7 +38,7 @@ def test_health_check_db_unreachable_returns_503(client: TestClient) -> None:
 def test_test_email_success(
     client: TestClient, superuser_token_headers: dict[str, str]
 ) -> None:
-    with patch("app.utils.send_email"):
+    with patch("app.api.routes.utils.send_email"):
         r = client.post(
             f"{settings.API_V1_STR}/utils/test-email/",
             params={"email_to": "test@example.com"},
@@ -51,7 +51,7 @@ def test_test_email_success(
 def test_test_email_requires_superuser(
     client: TestClient, normal_user_token_headers: dict[str, str]
 ) -> None:
-    with patch("app.utils.send_email"):
+    with patch("app.api.routes.utils.send_email"):
         r = client.post(
             f"{settings.API_V1_STR}/utils/test-email/",
             params={"email_to": "test@example.com"},
@@ -61,7 +61,7 @@ def test_test_email_requires_superuser(
 
 
 def test_test_email_rejects_unauthenticated(client: TestClient) -> None:
-    with patch("app.utils.send_email"):
+    with patch("app.api.routes.utils.send_email"):
         r = client.post(
             f"{settings.API_V1_STR}/utils/test-email/",
             params={"email_to": "test@example.com"},
