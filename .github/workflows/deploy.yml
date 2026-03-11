@@ -1,0 +1,68 @@
+name: Deploy
+
+on:
+  push:
+    branches: [master]
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          echo "${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Deploy
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -o ConnectTimeout=10 deploy@${DEPLOY_HOST} << 'ENDSSH'
+            set -euo pipefail
+            cd /opt/blog
+
+            echo "==> Pulling latest code..."
+            git fetch origin master
+            git reset --hard origin/master
+
+            echo "==> Building and starting services..."
+            docker compose -f compose.yml -f compose.traefik.yml up -d --build
+
+            echo "==> Waiting for health check..."
+            for i in $(seq 1 30); do
+              if curl -sf http://localhost:8000/api/v1/utils/health-check/ > /dev/null 2>&1; then
+                echo "==> Health check passed (attempt $i)"
+                exit 0
+              fi
+              echo "Waiting... ($i/30)"
+              sleep 5
+            done
+
+            echo "==> Health check FAILED after 150 seconds"
+            docker compose -f compose.yml -f compose.traefik.yml logs --tail=50 backend
+            docker compose -f compose.yml -f compose.traefik.yml logs --tail=50 prestart
+            exit 1
+          ENDSSH
+
+      - name: Clean up SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
+
+      - name: Deployment Summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Commit** | \`${{ github.sha }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Site** | https://jmpd.sh |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Health Check** | https://jmpd.sh/api/v1/utils/health-check/ |" >> $GITHUB_STEP_SUMMARY
