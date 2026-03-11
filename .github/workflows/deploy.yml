@@ -38,20 +38,24 @@ jobs:
             docker compose -f compose.yml -f compose.traefik.yml up -d --build
 
             echo "==> Waiting for health check..."
+            healthy=false
             for i in $(seq 1 30); do
               status=$(docker inspect --format='{{.State.Health.Status}}' blog-backend-1 2>/dev/null || echo "starting")
               if [ "$status" = "healthy" ]; then
                 echo "==> Container healthy (attempt $i)"
-                exit 0
+                healthy=true
+                break
               fi
               echo "Waiting... ($i/30, status: $status)"
               sleep 5
             done
 
-            echo "==> Health check FAILED after 150 seconds"
-            docker compose -f compose.yml -f compose.traefik.yml logs --tail=50 backend
-            docker compose -f compose.yml -f compose.traefik.yml logs --tail=50 prestart
-            exit 1
+            if [ "$healthy" != "true" ]; then
+              echo "==> Health check FAILED after 150 seconds"
+              docker compose -f compose.yml -f compose.traefik.yml logs --tail=50 backend
+              docker compose -f compose.yml -f compose.traefik.yml logs --tail=50 prestart
+              exit 1
+            fi
           ENDSSH
 
       - name: Clean up SSH key
