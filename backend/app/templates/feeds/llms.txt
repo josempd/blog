@@ -2,10 +2,14 @@
 
 > {{ site_description }}
 
+- Author: {{ site_author }}
+- Full content: {{ base_url }}llms-full.txt
+- RSS feed: {{ base_url }}feed.xml
+
 ## Blog Posts
 
 {% for post in posts %}
-- [{{ post.title }}]({{ base_url }}blog/{{ post.slug }}.md)
+- [{{ post.title }}]({{ base_url }}blog/{{ post.slug }}.md){% if post.published_at %} ({{ post.published_at.strftime('%Y-%m-%d') }}){% endif %}{% if post.excerpt %}: {{ post.excerpt }}{% endif %}
 {% endfor %}
 
 ## Projects

@@ -85,5 +85,6 @@ async def robots_txt(request: Request):
         "Allow: /\n"
         "\n"
         f"Sitemap: {base_url}sitemap.xml\n"
+        f"LLMs: {base_url}llms.txt\n"
     )
     return Response(content=body, media_type="text/plain")

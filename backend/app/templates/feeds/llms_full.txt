@@ -5,6 +5,13 @@
 {% for post in posts %}
 ## {{ post.title }}
 
+{% if post.published_at %}- Date: {{ post.published_at.strftime('%Y-%m-%d') }}
+{% endif %}{% if post.tags %}- Tags: {{ post.tags | map(attribute='name') | join(', ') }}
+{% endif %}- URL: {{ base_url }}blog/{{ post.slug }}
+
 {{ post.content_markdown }}
 
+{% if not loop.last %}---
+
+{% endif %}
 {% endfor %}
