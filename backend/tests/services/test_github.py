@@ -1,7 +1,5 @@
 """Unit tests for services.github — parse_github_url and fetch_repo_metadata."""
 
-from __future__ import annotations
-
 from unittest.mock import MagicMock, patch
 
 import httpx

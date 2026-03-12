@@ -1,7 +1,5 @@
 """Post service — business logic for post sync and tag management."""
 
-from __future__ import annotations
-
 from sqlmodel import Session
 
 from app.content import slugify

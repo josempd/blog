@@ -5,8 +5,6 @@ so the add order is: Metrics → RequestLogging → TraceId → CORS → Securit
 (SecurityHeaders runs first).
 """
 
-from __future__ import annotations
-
 import ipaddress
 import secrets
 import time

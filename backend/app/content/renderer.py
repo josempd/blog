@@ -1,7 +1,5 @@
 """Markdown renderer — mistune 3 with Pygments syntax highlighting and heading anchors."""
 
-from __future__ import annotations
-
 import re
 from dataclasses import dataclass
 

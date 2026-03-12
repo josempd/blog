@@ -20,7 +20,7 @@ def test_health_check_db_unreachable_returns_503(client: TestClient) -> None:
     mock_session = MagicMock(spec=Session)
     mock_session.exec.side_effect = OperationalError("connection refused", None, None)
 
-    def _broken_db() -> Generator[MagicMock, None, None]:
+    def _broken_db() -> Generator[MagicMock]:
         yield mock_session
 
     app.dependency_overrides[get_db] = _broken_db

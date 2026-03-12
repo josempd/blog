@@ -6,8 +6,6 @@ All orchestration logic lives in ``services.content_sync``. This module
 exists solely to provide the ``python -m`` entrypoint for ``prestart.sh``.
 """
 
-from __future__ import annotations
-
 from pathlib import Path
 
 import structlog

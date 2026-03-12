@@ -3,11 +3,9 @@
 No DB access. Returns dataclasses that sync.py bridges into CRUD calls.
 """
 
-from __future__ import annotations
-
 import re
 from dataclasses import dataclass
-from datetime import date, datetime, time, timezone
+from datetime import UTC, date, datetime, time
 from pathlib import Path
 from typing import Any
 
@@ -24,13 +22,13 @@ def _to_utc_datetime(value: str | date | datetime) -> datetime:
     if isinstance(value, str):
         parsed = datetime.fromisoformat(value)
         if parsed.tzinfo is None:
-            return parsed.replace(tzinfo=timezone.utc)
+            return parsed.replace(tzinfo=UTC)
         return parsed
     if isinstance(value, datetime):
         if value.tzinfo is None:
-            return value.replace(tzinfo=timezone.utc)
+            return value.replace(tzinfo=UTC)
         return value
-    return datetime.combine(value, time.min, tzinfo=timezone.utc)
+    return datetime.combine(value, time.min, tzinfo=UTC)
 
 
 def _parse_tags(raw: Any) -> list[str]:
@@ -220,7 +218,7 @@ def load_posts(content_dir: Path) -> list[ParsedPost]:
     if not posts_dir.is_dir():
         return []
     posts = [load_post(f, content_dir) for f in sorted(posts_dir.glob("*.md"))]
-    _min_dt = datetime.min.replace(tzinfo=timezone.utc)
+    _min_dt = datetime.min.replace(tzinfo=UTC)
     return sorted(posts, key=lambda p: p.published_at or _min_dt, reverse=True)
 
 

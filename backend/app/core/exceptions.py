@@ -4,8 +4,6 @@ All domain exceptions inherit from AppError and carry enough context for
 the exception handlers to produce a Problem Details JSON response.
 """
 
-from __future__ import annotations
-
 from typing import Any
 
 from pydantic import BaseModel

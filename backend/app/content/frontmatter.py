@@ -1,7 +1,5 @@
 """Frontmatter parser — splits YAML front matter from Markdown body."""
 
-from __future__ import annotations
-
 import re
 from typing import Any
 

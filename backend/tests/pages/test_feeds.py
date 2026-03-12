@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 import xml.etree.ElementTree as ET
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi.testclient import TestClient
 from sqlmodel import Session
@@ -18,8 +16,8 @@ def _seed_published_posts(
     Returns [(slug, title, published_at), ...] ordered oldest first.
     """
     posts = [
-        ("test-post-older", "Older Post", datetime(2024, 1, 1, tzinfo=timezone.utc)),
-        ("test-post-newer", "Newer Post", datetime(2024, 6, 1, tzinfo=timezone.utc)),
+        ("test-post-older", "Older Post", datetime(2024, 1, 1, tzinfo=UTC)),
+        ("test-post-newer", "Newer Post", datetime(2024, 6, 1, tzinfo=UTC)),
     ]
     for slug, title, pub_at in posts:
         upsert_post(

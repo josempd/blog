@@ -4,8 +4,6 @@ Call ``register_exception_handlers(app)`` during startup to install all
 handlers on the FastAPI application.
 """
 
-from __future__ import annotations
-
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError

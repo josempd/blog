@@ -1,6 +1,6 @@
 """Integration tests for services.content_sync — uses tmp_path + real DB session."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from unittest.mock import patch
 
@@ -222,7 +222,7 @@ def test_sync_enriches_project_with_github_metadata(
         stars=100,
         language="Python",
         forks=10,
-        last_pushed_at=datetime(2024, 6, 1, tzinfo=timezone.utc),
+        last_pushed_at=datetime(2024, 6, 1, tzinfo=UTC),
     )
 
     with patch("app.services.project.fetch_repo_metadata", return_value=mock_meta):

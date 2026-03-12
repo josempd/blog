@@ -14,7 +14,7 @@ from tests.utils.utils import get_superuser_token_headers
 
 
 @pytest.fixture(scope="session")
-def _db_connection() -> Generator[Connection, None, None]:
+def _db_connection() -> Generator[Connection]:
     """Session-scoped connection with an outer transaction that never commits."""
     with Session(engine) as setup_session:
         init_db(setup_session)
@@ -27,7 +27,7 @@ def _db_connection() -> Generator[Connection, None, None]:
 
 
 @pytest.fixture()
-def db(_db_connection: Connection) -> Generator[Session, None, None]:
+def db(_db_connection: Connection) -> Generator[Session]:
     """Function-scoped session on a savepoint. Rolls back after each test."""
     nested = _db_connection.begin_nested()
     session = Session(bind=_db_connection, join_transaction_mode="create_savepoint")
@@ -37,10 +37,10 @@ def db(_db_connection: Connection) -> Generator[Session, None, None]:
 
 
 @pytest.fixture()
-def client(db: Session) -> Generator[TestClient, None, None]:
+def client(db: Session) -> Generator[TestClient]:
     """Function-scoped TestClient sharing the test's DB session."""
 
-    def _override_get_db() -> Generator[Session, None, None]:
+    def _override_get_db() -> Generator[Session]:
         yield db
 
     app.dependency_overrides[get_db] = _override_get_db

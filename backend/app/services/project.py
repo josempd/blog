@@ -1,7 +1,5 @@
 """Project service — business logic for project sync."""
 
-from __future__ import annotations
-
 from sqlmodel import Session
 
 from app.content.loader import ParsedProject

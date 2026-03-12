@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from unittest.mock import patch
 from uuid import uuid4
 
@@ -170,7 +170,7 @@ def test_login_with_bcrypt_password_upgrades_to_argon2(
 
 def test_expired_jwt_returns_401(client: TestClient) -> None:
     expired_payload = {
-        "exp": datetime.now(timezone.utc) - timedelta(hours=1),
+        "exp": datetime.now(UTC) - timedelta(hours=1),
         "sub": str(uuid4()),
     }
     expired_token = pyjwt.encode(
@@ -193,7 +193,7 @@ def test_malformed_jwt_returns_401(client: TestClient) -> None:
 
 def test_jwt_nonexistent_user_returns_404(client: TestClient) -> None:
     valid_payload = {
-        "exp": datetime.now(timezone.utc) + timedelta(hours=1),
+        "exp": datetime.now(UTC) + timedelta(hours=1),
         "sub": str(uuid4()),
     }
     valid_token = pyjwt.encode(
@@ -218,7 +218,7 @@ def test_inactive_user_returns_400(client: TestClient, db: Session) -> None:
 
     token = pyjwt.encode(
         {
-            "exp": datetime.now(timezone.utc) + timedelta(hours=1),
+            "exp": datetime.now(UTC) + timedelta(hours=1),
             "sub": str(user.id),
         },
         settings.SECRET_KEY,

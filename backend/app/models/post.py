@@ -24,7 +24,7 @@ class Tag(SQLModel, table=True):
         default_factory=get_datetime_utc,
         sa_type=DateTime(timezone=True),  # type: ignore[arg-type]
     )
-    posts: list["Post"] = Relationship(back_populates="tags", link_model=PostTagLink)
+    posts: list[Post] = Relationship(back_populates="tags", link_model=PostTagLink)
 
 
 class Post(SQLModel, table=True):

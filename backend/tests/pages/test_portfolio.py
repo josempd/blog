@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 from fastapi.testclient import TestClient
@@ -111,7 +109,7 @@ def test_project_card_renders_github_metadata(client: TestClient, db: Session) -
     project.github_stars = 42
     project.github_language = "Python"
     project.github_forks = 5
-    project.github_last_pushed_at = datetime(2024, 6, 1, tzinfo=timezone.utc)
+    project.github_last_pushed_at = datetime(2024, 6, 1, tzinfo=UTC)
     db.add(project)
     db.commit()
 

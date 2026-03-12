@@ -4,8 +4,6 @@ Call ``setup_logging()`` once at application startup — before any other
 imports that use ``logging`` or ``structlog``.
 """
 
-from __future__ import annotations
-
 import logging
 import sys
 from typing import Any

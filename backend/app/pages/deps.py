@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 import functools
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from email.utils import format_datetime
 from pathlib import Path
 from typing import Any
@@ -55,7 +53,7 @@ templates.env.globals.update(
         "umami_enabled": settings.UMAMI_ENABLED,
         "umami_host": settings.UMAMI_HOST,
         "umami_website_id": settings.UMAMI_WEBSITE_ID,
-        "current_year": datetime.now(timezone.utc).year,
+        "current_year": datetime.now(UTC).year,
         "island_asset": island_asset,
     }
 )
@@ -63,11 +61,11 @@ templates.env.globals.update(
 
 def _rfc822_filter(dt: datetime) -> str:
     if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
+        dt = dt.replace(tzinfo=UTC)
     # Normalise to stdlib timezone.utc — format_datetime(usegmt=True) rejects
     # other UTC-equivalent tzinfos such as zoneinfo.ZoneInfo("Etc/UTC").
     if dt.utcoffset() is not None and dt.utcoffset().total_seconds() == 0:  # type: ignore[union-attr]
-        dt = dt.replace(tzinfo=timezone.utc)
+        dt = dt.replace(tzinfo=UTC)
     return format_datetime(dt, usegmt=True)
 
 

@@ -4,8 +4,6 @@ Owns transaction boundaries: commits per file so one failure doesn't abort
 the entire sync. Handles orphan cleanup for deleted Markdown files.
 """
 
-from __future__ import annotations
-
 from pathlib import Path
 
 import structlog

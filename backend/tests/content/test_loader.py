@@ -1,6 +1,6 @@
 """Unit tests for app.content.loader — uses tmp_path, no DB access."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -47,7 +47,7 @@ def test_load_post_date_slug_filename(tmp_path: Path) -> None:
     assert isinstance(post, ParsedPost)
     assert post.title == "My First Post"
     assert post.slug == "my-first-post"
-    assert post.published_at == datetime(2024, 3, 15, tzinfo=timezone.utc)
+    assert post.published_at == datetime(2024, 3, 15, tzinfo=UTC)
     assert post.source_path == "posts/2024-03-15-my-first-post.md"
     assert "Body text here" in post.content_markdown
 
@@ -73,7 +73,7 @@ def test_load_post_published_at_from_frontmatter_overrides_filename(
         "---\ntitle: A Post\npublished_at: 2025-06-01\n---\nContent.",
     )
     post = load_post(path, tmp_path)
-    assert post.published_at == datetime(2025, 6, 1, tzinfo=timezone.utc)
+    assert post.published_at == datetime(2025, 6, 1, tzinfo=UTC)
 
 
 def test_load_post_date_field_overrides_filename(tmp_path: Path) -> None:
@@ -84,7 +84,7 @@ def test_load_post_date_field_overrides_filename(tmp_path: Path) -> None:
         "---\ntitle: A Post\ndate: 2023-01-10\n---\nContent.",
     )
     post = load_post(path, tmp_path)
-    assert post.published_at == datetime(2023, 1, 10, tzinfo=timezone.utc)
+    assert post.published_at == datetime(2023, 1, 10, tzinfo=UTC)
 
 
 def test_load_post_missing_title_raises_value_error(tmp_path: Path) -> None:
@@ -195,7 +195,7 @@ def test_load_post_string_date_in_frontmatter(tmp_path: Path) -> None:
         '---\ntitle: String Date Post\ndate: "2024-06-15"\n---\nContent.',
     )
     post = load_post(path, tmp_path)
-    assert post.published_at == datetime(2024, 6, 15, tzinfo=timezone.utc)
+    assert post.published_at == datetime(2024, 6, 15, tzinfo=UTC)
 
 
 def test_load_post_string_datetime_in_frontmatter(tmp_path: Path) -> None:
@@ -206,7 +206,7 @@ def test_load_post_string_datetime_in_frontmatter(tmp_path: Path) -> None:
         '---\ntitle: String Datetime Post\ndate: "2024-06-15T10:30:00"\n---\nContent.',
     )
     post = load_post(path, tmp_path)
-    assert post.published_at == datetime(2024, 6, 15, 10, 30, tzinfo=timezone.utc)
+    assert post.published_at == datetime(2024, 6, 15, 10, 30, tzinfo=UTC)
 
 
 def test_load_post_no_date_in_filename_published_at_none(tmp_path: Path) -> None:

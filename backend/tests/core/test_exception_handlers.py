@@ -1,7 +1,5 @@
 """Tests for app.core.exception_handlers — uncovered handler paths."""
 
-from __future__ import annotations
-
 import asyncio
 from unittest.mock import MagicMock
 

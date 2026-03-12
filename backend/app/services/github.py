@@ -1,7 +1,5 @@
 """GitHub service — fetch repository metadata from the GitHub API."""
 
-from __future__ import annotations
-
 import re
 from dataclasses import dataclass
 from datetime import datetime

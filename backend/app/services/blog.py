@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from sqlmodel import Session
 
 from app.content.renderer import TocEntry, extract_toc

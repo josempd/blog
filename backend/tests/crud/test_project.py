@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 from pydantic import ValidationError
@@ -177,7 +177,7 @@ def test_update_github_metadata(db: Session) -> None:
         stars=42,
         language="Python",
         forks=5,
-        last_pushed_at=datetime(2024, 6, 1, tzinfo=timezone.utc),
+        last_pushed_at=datetime(2024, 6, 1, tzinfo=UTC),
     )
     db.commit()
     db.refresh(project)

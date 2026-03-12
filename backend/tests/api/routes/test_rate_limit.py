@@ -10,10 +10,10 @@ from app.main import app
 
 
 @pytest.fixture()
-def rate_limited_client(db: Session) -> Generator[TestClient, None, None]:
+def rate_limited_client(db: Session) -> Generator[TestClient]:
     """TestClient with rate limiting enabled."""
 
-    def _override_get_db() -> Generator[Session, None, None]:
+    def _override_get_db() -> Generator[Session]:
         yield db
 
     app.dependency_overrides[get_db] = _override_get_db

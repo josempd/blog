@@ -4,8 +4,6 @@ Call ``setup_observability(app)`` during startup.  Everything is a no-op
 when ``settings.OTEL_ENABLED`` is ``False``.
 """
 
-from __future__ import annotations
-
 import structlog
 from fastapi import FastAPI
 
