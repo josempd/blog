@@ -133,6 +133,14 @@ islands-check: ## Type-check Svelte islands (svelte-check)
 	cd islands && npm run check
 
 # ---------------------------------------------------------------------------
+# Content
+# ---------------------------------------------------------------------------
+
+.PHONY: new-post
+new-post: ## Scaffold a new blog post (usage: make new-post title="My Post Title")
+	@bash scripts/new-post.sh "$(title)"
+
+# ---------------------------------------------------------------------------
 # E2E Tests
 # ---------------------------------------------------------------------------
 
