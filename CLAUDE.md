@@ -4,7 +4,7 @@ Personal blog + portfolio built on [full-stack-fastapi-template](https://github.
 
 ## Stack
 
-- **Backend**: FastAPI + SQLModel + PostgreSQL + Alembic (Python 3.10, uv)
+- **Backend**: FastAPI + SQLModel + PostgreSQL + Alembic (Python 3.14, uv)
 - **Frontend**: Jinja2 templates + HTMX (vendored) + Svelte 5 islands (Vite)
 - **Content**: Markdown in `content/` → synced to DB at startup (mistune 3 + Pygments)
 - **Deploy**: Docker + Traefik + GitHub Actions
