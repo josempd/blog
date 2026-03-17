@@ -120,6 +120,10 @@ setup: install ## Full dev setup (deps + pre-commit hooks)
 # Islands
 # ---------------------------------------------------------------------------
 
+.PHONY: islands-install
+islands-install: ## Install island dependencies
+	cd islands && npm ci
+
 .PHONY: islands-build
 islands-build: ## Build Svelte islands
 	cd islands && npm run build
