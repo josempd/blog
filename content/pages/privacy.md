@@ -21,4 +21,4 @@ Anonymised analytics events are retained for 12 months, after which they are del
 
 ## Contact
 
-To request access to, correction of, or deletion of any data held about you, contact me at [jmpd.chemist230@passmail.net](mailto:jmpd.chemist230@passmail.net). I will respond within 30 days.
+To request access to, correction of, or deletion of any data held about you, contact me at [contact@jmpd.sh](mailto:contact@jmpd.sh). I will respond within 30 days.
