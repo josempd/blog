@@ -20,11 +20,14 @@ Personal blog and portfolio — built with FastAPI, HTMX, and a Markdown content
 ## Local development
 
 ```bash
-make up        # Start all services
-make test      # Run backend tests with coverage
-make lint      # Run ty + ruff checks
-make fmt       # Auto-format with ruff
-make check     # Lint + test (CI equivalent)
+make up              # Start all services
+make test            # Run backend tests with coverage
+make lint            # Run ty + ruff checks
+make fmt             # Auto-format with ruff
+make check           # Lint + type-check islands + test (CI equivalent)
+make islands-build   # Build Svelte islands
+make islands-dev     # Watch mode for island development
+make new-post title="My Post Title"  # Scaffold a new blog post
 ```
 
 App runs at http://localhost:8000.
