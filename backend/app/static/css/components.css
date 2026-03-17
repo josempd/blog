@@ -645,6 +645,68 @@ nav[aria-label="Main navigation"] {
 }
 
 /* ==========================================================================
+   Post Actions
+   ========================================================================== */
+
+.post-title-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+}
+
+.post-title-row h1 {
+  flex: 1;
+  min-width: 0;
+}
+
+.post-actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+@media (max-width: 39.999rem) {
+  .post-title-row h1 {
+    flex-basis: 100%;
+  }
+}
+
+.post-actions-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-family: var(--font-body);
+  line-height: 1.4;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color var(--duration-fast) ease;
+}
+
+.post-actions-btn:hover {
+  color: var(--color-accent);
+}
+
+.post-actions-btn:visited {
+  color: var(--color-text-muted);
+}
+
+.post-actions-btn:visited:hover {
+  color: var(--color-accent);
+}
+
+.post-actions-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
    Footer
    ========================================================================== */
 

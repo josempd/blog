@@ -46,7 +46,28 @@
 {% block content %}
 <article class="post-layout">
     <header class="page-header">
-        <h1>{{ post.title }}</h1>
+        <div class="post-title-row">
+            <h1>{{ post.title }}</h1>
+            <div class="post-actions">
+                <button class="post-actions-btn" data-copy-md="/blog/{{ post.slug }}.md"
+                        aria-label="Copy page as Markdown">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    <span>Copy MD</span>
+                </button>
+                <a href="/blog/{{ post.slug }}.md" target="_blank" rel="noopener"
+                   class="post-actions-btn" aria-label="Open page as Markdown">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                    <span>Open MD</span>
+                </a>
+            </div>
+        </div>
         <div class="post-meta">
             {% if post.published_at %}
             <time datetime="{{ post.published_at.isoformat() }}">{{ post.published_at.strftime('%b %d, %Y') }}</time>
@@ -88,6 +109,7 @@
 
 {% block scripts %}
 {{ super() }}
+<script src="/static/js/post-actions.js"></script>
 {% if toc and toc | length > 1 %}
     {% set toc_js = island_asset("TableOfContents") %}
     {% if toc_js %}

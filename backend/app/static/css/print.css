@@ -31,7 +31,8 @@ body {
 .tag-list,
 .load-more,
 .nav-menu-toggle,
-#toc-island {
+#toc-island,
+.post-actions {
   display: none !important;
 }
 
