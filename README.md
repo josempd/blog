@@ -1,5 +1,13 @@
 # jmpd.sh blog
 
+[![CI](https://github.com/josempd/blog/actions/workflows/ci.yml/badge.svg)](https://github.com/josempd/blog/actions/workflows/ci.yml)
+[![Deploy](https://github.com/josempd/blog/actions/workflows/deploy.yml/badge.svg)](https://github.com/josempd/blog/actions/workflows/deploy.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python 3.14](https://img.shields.io/badge/python-3.14-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![HTMX](https://img.shields.io/badge/HTMX-3366CC.svg?logo=htmx&logoColor=white)](https://htmx.org/)
+[![Svelte](https://img.shields.io/badge/Svelte_5-FF3E00.svg?logo=svelte&logoColor=white)](https://svelte.dev/)
+
 Personal blog and portfolio — built with FastAPI, HTMX, and a Markdown content engine.
 
 ## Stack

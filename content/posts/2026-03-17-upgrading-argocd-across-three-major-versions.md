@@ -4,7 +4,7 @@ slug: upgrading-argocd-across-three-major-versions
 date: 2026-03-17
 tags: [Kubernetes, ArgoCD, Infrastructure]
 excerpt: ArgoCD was 16 months behind — spanning chart versions 7 through 9 and six ArgoCD releases. Here's how I stepped through three major upgrades on a system that manages every deployment in the cluster.
-published: false
+published: true
 ---
 
 ArgoCD on our shared cluster was running Helm chart **7.6.8** (ArgoCD v2.12.4). The latest was **9.4.1** (ArgoCD v3.3.0). That's 16 months of drift, three chart major versions, and six ArgoCD releases. ArgoCD manages every infrastructure component and application deployment across dev and production — a failed upgrade doesn't just break ArgoCD, it breaks everything.
