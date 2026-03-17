@@ -39,7 +39,7 @@ class _HighlightRenderer(HTMLRenderer):
         return f'<h{level} id="{anchor}">{text}</h{level}>\n'
 
 
-_md = mistune.create_markdown(renderer=_HighlightRenderer())
+_md = mistune.create_markdown(renderer=_HighlightRenderer(), plugins=["table"])
 
 
 def render_markdown(text: str) -> str:
