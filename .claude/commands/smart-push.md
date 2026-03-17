@@ -12,7 +12,7 @@ Push the current branch and create a GitHub pull request with a well-structured 
    - Check if gh CLI is installed: `which gh`
    - Check if authenticated: `gh auth status`
    - Check current branch: `git branch --show-current`
-   - Ensure not on main/master: abort if so
+   - Ensure not on main: abort if so
 
 2. Analyze the branch:
    - Get commits not in main: `git log main..HEAD --oneline`

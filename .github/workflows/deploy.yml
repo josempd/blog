@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [master]
+    branches: [main]
 
 concurrency:
   group: deploy-production
@@ -31,8 +31,8 @@ jobs:
             cd /opt/blog
 
             echo "==> Pulling latest code..."
-            git fetch origin master
-            git reset --hard origin/master
+            git fetch origin main
+            git reset --hard origin/main
 
             echo "==> Building and starting services..."
             docker compose -f compose.yml -f compose.traefik.yml up -d --build
