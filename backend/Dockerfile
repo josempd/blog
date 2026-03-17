@@ -2,7 +2,7 @@
 FROM node:25-slim AS islands
 WORKDIR /build
 COPY islands/package.json islands/package-lock.json* ./
-RUN npm install --ignore-scripts
+RUN npm ci
 COPY islands/ ./
 RUN npm run build
 
