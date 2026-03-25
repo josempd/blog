@@ -8,6 +8,8 @@
         <a href="/blog?tag={{ tag.slug }}"
            hx-get="/blog?tag={{ tag.slug }}"
            hx-target="#post-list"
+           hx-swap="innerHTML"
+           hx-indicator="#post-list-indicator"
            hx-push-url="true"
            class="tag">{{ tag.name }}</a>
         {% endfor %}
