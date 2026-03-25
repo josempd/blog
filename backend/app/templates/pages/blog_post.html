@@ -110,10 +110,4 @@
 {% block scripts %}
 {{ super() }}
 <script src="/static/js/post-actions.js"></script>
-{% if toc and toc | length > 1 %}
-    {% set toc_js = island_asset("TableOfContents") %}
-    {% if toc_js %}
-    <script type="module" src="{{ toc_js }}"></script>
-    {% endif %}
-{% endif %}
 {% endblock %}

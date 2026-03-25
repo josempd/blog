@@ -1,20 +1,22 @@
 <script>
+  let { endpoint = "/search" } = $props();
+
   let open = $state(false);
   let query = $state("");
   let resultsHtml = $state("");
   let loading = $state(false);
+  let error = $state("");
   let activeIndex = $state(-1);
 
   let inputEl;
   let dialogEl;
   let debounceTimer;
 
-  const endpoint = "/search";
-
   function openDialog() {
     open = true;
     query = "";
     resultsHtml = "";
+    error = "";
     activeIndex = -1;
     setTimeout(() => inputEl?.focus(), 0);
   }
@@ -23,6 +25,7 @@
     open = false;
     query = "";
     resultsHtml = "";
+    error = "";
     activeIndex = -1;
   }
 
@@ -32,8 +35,7 @@
       tag === "INPUT" ||
       tag === "TEXTAREA" ||
       tag === "SELECT" ||
-      // @ts-ignore — activeElement may be HTMLElement which has isContentEditable
-      document.activeElement?.isContentEditable
+      /** @type {HTMLElement | null} */ (document.activeElement)?.isContentEditable
     );
   }
 
@@ -77,15 +79,21 @@
   async function doSearch(q) {
     if (!q.trim()) {
       resultsHtml = "";
+      error = "";
       return;
     }
     loading = true;
+    error = "";
     try {
       const res = await fetch(`${endpoint}?q=${encodeURIComponent(q.trim())}`, {
         headers: { "HX-Request": "true" },
       });
+      if (!res.ok) throw new Error(`Search failed (${res.status})`);
       resultsHtml = await res.text();
       activeIndex = -1;
+    } catch (err) {
+      error = err.message || "Search failed";
+      resultsHtml = "";
     } finally {
       loading = false;
     }
@@ -121,11 +129,9 @@
   }
 
   $effect(() => {
-    const link = document.querySelector(".nav-search");
-    // @ts-ignore — querySelector returns Element but nav-search is an HTMLElement
+    const link = /** @type {HTMLElement | null} */ (document.querySelector(".nav-search"));
     if (link) link.style.display = "none";
     return () => {
-      // @ts-ignore — same cast as above
       if (link) link.style.display = "";
     };
   });
@@ -191,6 +197,8 @@
     <div class="search-dialog-results">
       {#if loading}
         <p class="search-dialog-status">Searching...</p>
+      {:else if error}
+        <p class="search-dialog-status" role="alert">Error: {error}</p>
       {:else if resultsHtml}
         {@html resultsHtml}
       {:else if query.trim()}

@@ -57,10 +57,12 @@
     <script src="/static/js/theme.js"></script>
     <script src="/static/js/nav.js"></script>
     <script src="/static/js/contact.js"></script>
-    {% set search_js = island_asset("SearchDialog") %}
-    {% if search_js %}
-    <script type="module" src="{{ search_js }}"></script>
-    {% endif %}
+    {% for island in global_islands | default([]) %}
+    <script type="module" src="/static/dist/islands/{{ island }}.js"></script>
+    {% endfor %}
+    {% for island in page_islands | default([]) %}
+    <script type="module" src="/static/dist/islands/{{ island }}.js"></script>
+    {% endfor %}
     {% block scripts %}
     {% if umami_enabled and umami_host and umami_website_id %}
     <script defer src="{{ umami_host }}/script.js" data-website-id="{{ umami_website_id }}"></script>

@@ -79,8 +79,11 @@ async def blog_detail_md(slug: str, session: SessionDep):
 @router.get("/blog/{slug}")
 async def blog_detail(request: Request, session: SessionDep, slug: str):
     post, toc = blog_service.get_published_post_with_toc(session=session, slug=slug)
+    context = {"post": post, "toc": toc}
+    if toc and len(toc) > 1:
+        context["page_islands"] = ["TableOfContents"]
     return templates.TemplateResponse(
         request,
         "pages/blog_post.html",
-        {"post": post, "toc": toc},
+        context,
     )
