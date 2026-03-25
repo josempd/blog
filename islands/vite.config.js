@@ -1,25 +1,24 @@
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import { defineConfig } from "vite";
-import { readdirSync } from "fs";
+import { existsSync, readdirSync } from "fs";
 import { resolve } from "path";
 
-const entries = {};
-for (const file of readdirSync("src")) {
-  if (file.endsWith(".js")) {
-    entries[file.replace(".js", "")] = resolve("src", file);
-  }
-}
+const islandsDir = resolve(__dirname, "src/islands");
+const entries = Object.fromEntries(
+  readdirSync(islandsDir)
+    .filter((name) => existsSync(resolve(islandsDir, name, "index.js")))
+    .map((name) => [name, resolve(islandsDir, name, "index.js")])
+);
 
 export default defineConfig({
   plugins: [svelte()],
   build: {
     outDir: "../backend/app/static/dist/islands",
     emptyOutDir: true,
-    manifest: true,
     rollupOptions: {
       input: entries,
       output: {
-        entryFileNames: "[name]-[hash].js",
+        entryFileNames: "[name].js",
         chunkFileNames: "chunks/[name]-[hash].js",
       },
     },

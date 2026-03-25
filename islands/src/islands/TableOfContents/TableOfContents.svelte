@@ -1,11 +1,8 @@
 <script>
-  import { onMount } from "svelte";
-
   let activeId = $state("");
-  let navEl = null;
 
-  onMount(() => {
-    navEl = document.getElementById("toc-nav");
+  $effect(() => {
+    const navEl = document.getElementById("toc-nav");
     if (!navEl) return;
 
     const links = [...navEl.querySelectorAll("a[href^='#']")];
@@ -33,6 +30,7 @@
   });
 
   $effect(() => {
+    const navEl = document.getElementById("toc-nav");
     if (!navEl) return;
 
     for (const a of navEl.querySelectorAll("a[href^='#']")) {

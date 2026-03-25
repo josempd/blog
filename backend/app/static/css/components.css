@@ -587,7 +587,6 @@ nav[aria-label="Main navigation"] {
   font-size: var(--text-base);
   font-family: var(--font-body);
   color: var(--color-text);
-  outline: none;
   padding: var(--space-1) 0;
 }
 

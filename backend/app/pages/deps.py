@@ -1,9 +1,6 @@
-import functools
-import json
 from datetime import UTC, datetime
 from email.utils import format_datetime
 from pathlib import Path
-from typing import Any
 
 from fastapi import Request
 from fastapi.templating import Jinja2Templates
@@ -12,33 +9,6 @@ from app.core.config import settings
 
 _TEMPLATE_DIR = Path(__file__).resolve().parent.parent / "templates"
 templates = Jinja2Templates(directory=str(_TEMPLATE_DIR))
-
-_MANIFEST_PATH = (
-    Path(__file__).resolve().parent.parent
-    / "static"
-    / "dist"
-    / "islands"
-    / ".vite"
-    / "manifest.json"
-)
-
-
-@functools.lru_cache(maxsize=1)
-def _load_manifest() -> dict[str, Any]:
-    """Load and cache the Vite manifest (immutable after deployment)."""
-    if not _MANIFEST_PATH.exists():
-        return {}
-    return json.loads(_MANIFEST_PATH.read_text())
-
-
-def island_asset(name: str) -> str | None:
-    """Resolve a hashed island filename from the Vite manifest."""
-    manifest = _load_manifest()
-    entry = manifest.get(f"src/{name}.js")
-    if isinstance(entry, dict) and "file" in entry:
-        return f"/static/dist/islands/{entry['file']}"
-    return None
-
 
 templates.env.globals.update(
     {
@@ -54,7 +24,7 @@ templates.env.globals.update(
         "umami_host": settings.UMAMI_HOST,
         "umami_website_id": settings.UMAMI_WEBSITE_ID,
         "current_year": datetime.now(UTC).year,
-        "island_asset": island_asset,
+        "global_islands": ["SearchDialog"],
     }
 )
 
