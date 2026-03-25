@@ -47,7 +47,7 @@ async def blog_list(
         "active_tag": tag,
     }
 
-    if is_htmx_request(request):
+    if is_htmx_request(request) and not request.headers.get("HX-Boosted"):
         return templates.TemplateResponse(
             request, "pages/blog_list_partial.html", context
         )
@@ -61,7 +61,7 @@ async def blog_list(
 async def search(request: Request, session: SessionDep, q: str = ""):
     results = blog_service.search_published_posts(session=session, query=q, limit=20)
     context = {"request": request, "posts": results, "query": q}
-    if is_htmx_request(request):
+    if is_htmx_request(request) and not request.headers.get("HX-Boosted"):
         return templates.TemplateResponse(
             request, "pages/search_results_partial.html", context
         )
