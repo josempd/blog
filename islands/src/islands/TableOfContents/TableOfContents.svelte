@@ -6,10 +6,12 @@
     if (!navEl) return;
 
     const links = [...navEl.querySelectorAll("a[href^='#']")];
-    const headingIds = links.map((a) => a.getAttribute("href").slice(1));
-    const headings = headingIds
-      .map((id) => document.getElementById(id))
-      .filter(Boolean);
+    const headingIds = links
+      .map((a) => a.getAttribute("href")?.slice(1))
+      .filter((id) => id != null);
+    const headings = /** @type {HTMLElement[]} */ (
+      headingIds.map((id) => document.getElementById(id)).filter(Boolean)
+    );
 
     if (headings.length === 0) return;
 
@@ -34,7 +36,8 @@
     if (!navEl) return;
 
     for (const a of navEl.querySelectorAll("a[href^='#']")) {
-      const id = a.getAttribute("href").slice(1);
+      const id = a.getAttribute("href")?.slice(1);
+      if (!id) continue;
       if (id === activeId) {
         a.classList.add("toc-active");
         if (navEl.scrollHeight > navEl.clientHeight) {

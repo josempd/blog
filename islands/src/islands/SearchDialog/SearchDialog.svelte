@@ -8,8 +8,11 @@
   let error = $state("");
   let activeIndex = $state(-1);
 
+  /** @type {HTMLInputElement | undefined} */
   let inputEl;
+  /** @type {HTMLDivElement | undefined} */
   let dialogEl;
+  /** @type {ReturnType<typeof setTimeout> | undefined} */
   let debounceTimer;
 
   function openDialog() {
@@ -39,7 +42,7 @@
     );
   }
 
-  function handleKeydown(e) {
+  function handleKeydown(/** @type {KeyboardEvent} */ e) {
     if (!open) {
       if (e.key === "/" && !isInputFocused()) {
         e.preventDefault();
@@ -58,7 +61,9 @@
       return;
     }
 
-    const links = dialogEl?.querySelectorAll(".post-card h2 a") ?? [];
+    const links = /** @type {NodeListOf<HTMLElement>} */ (
+      dialogEl?.querySelectorAll(".post-card h2 a") ?? []
+    );
     if (e.key === "ArrowDown") {
       e.preventDefault();
       activeIndex = Math.min(activeIndex + 1, links.length - 1);
@@ -76,7 +81,7 @@
     }
   }
 
-  async function doSearch(q) {
+  async function doSearch(/** @type {string} */ q) {
     if (!q.trim()) {
       resultsHtml = "";
       error = "";
@@ -92,30 +97,32 @@
       resultsHtml = await res.text();
       activeIndex = -1;
     } catch (err) {
-      error = err.message || "Search failed";
+      error = err instanceof Error ? err.message : "Search failed";
       resultsHtml = "";
     } finally {
       loading = false;
     }
   }
 
-  function handleInput(e) {
-    query = e.target.value;
+  function handleInput(/** @type {Event} */ e) {
+    query = /** @type {HTMLInputElement} */ (e.target).value;
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => doSearch(query), 200);
   }
 
-  function handleBackdropClick(e) {
+  function handleBackdropClick(/** @type {MouseEvent} */ e) {
     if (e.target === e.currentTarget) {
       closeDialog();
     }
   }
 
-  function handleDialogKeydown(e) {
+  function handleDialogKeydown(/** @type {KeyboardEvent} */ e) {
     if (e.key !== "Tab") return;
-    const focusable = dialogEl?.querySelectorAll(
-      'input, a[href], button, [tabindex]:not([tabindex="-1"])'
-    ) ?? [];
+    const focusable = /** @type {NodeListOf<HTMLElement>} */ (
+      dialogEl?.querySelectorAll(
+        'input, a[href], button, [tabindex]:not([tabindex="-1"])'
+      ) ?? []
+    );
     if (focusable.length === 0) return;
     const first = focusable[0];
     const last = focusable[focusable.length - 1];
