@@ -100,7 +100,7 @@ if settings.all_cors_origins:
 if settings.ENVIRONMENT != "local":
     app.add_middleware(
         TrustedHostMiddleware,  # type: ignore[arg-type]
-        allowed_hosts=[settings.DOMAIN, f"www.{settings.DOMAIN}"],
+        allowed_hosts=[settings.DOMAIN, f"www.{settings.DOMAIN}", "localhost"],
     )
 app.add_middleware(SecurityHeadersMiddleware)  # type: ignore[arg-type]
 
