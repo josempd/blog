@@ -7,7 +7,7 @@
     <atom:link href="{{ base_url }}feed.xml" rel="self" type="application/rss+xml"/>
     {% for post in posts %}
     <item>
-        <title>{{ post.title }}</title>
+        <title>{{ post.title | e }}</title>
         <link>{{ base_url }}blog/{{ post.slug }}</link>
         <guid isPermaLink="true">{{ base_url }}blog/{{ post.slug }}</guid>
         {% if post.published_at %}<pubDate>{{ post.published_at | rfc822 }}</pubDate>{% endif %}

@@ -4,6 +4,7 @@ import re
 from unittest.mock import MagicMock, patch
 
 from fastapi.testclient import TestClient
+from httpx import Response
 
 from app.core.middleware import _extract_otel_trace_id, anonymize_ip
 from app.main import app
@@ -167,10 +168,18 @@ def test_security_headers_present(client: TestClient) -> None:
     )
 
 
+def _get_csp(response: Response) -> str:
+    """Return CSP header value regardless of enforce/report-only mode."""
+    return response.headers.get(
+        "Content-Security-Policy",
+        response.headers.get("Content-Security-Policy-Report-Only", ""),
+    )
+
+
 def test_csp_header_contains_nonce(client: TestClient) -> None:
     """CSP header includes a nonce in script-src."""
     response = client.get("/api/v1/utils/health-check/")
-    csp = response.headers.get("Content-Security-Policy-Report-Only", "")
+    csp = _get_csp(response)
     assert "nonce-" in csp
     assert "script-src 'self' 'nonce-" in csp
 
@@ -179,8 +188,8 @@ def test_csp_nonce_unique_per_request(client: TestClient) -> None:
     """Each request gets a different nonce."""
     r1 = client.get("/api/v1/utils/health-check/")
     r2 = client.get("/api/v1/utils/health-check/")
-    csp1 = r1.headers.get("Content-Security-Policy-Report-Only", "")
-    csp2 = r2.headers.get("Content-Security-Policy-Report-Only", "")
+    csp1 = _get_csp(r1)
+    csp2 = _get_csp(r2)
     nonces = [re.search(r"nonce-([A-Za-z0-9_-]+)", csp) for csp in [csp1, csp2]]
     assert nonces[0] and nonces[1]
     assert nonces[0].group(1) != nonces[1].group(1)

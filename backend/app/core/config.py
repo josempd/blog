@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     # 60 minutes * 4 hours = 4 hours
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 4
+    DOMAIN: str = "localhost"
     FRONTEND_HOST: str = "http://localhost:5173"
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
 
@@ -51,7 +52,7 @@ class Settings(BaseSettings):
     UMAMI_WEBSITE_ID: str = ""
 
     # Security
-    CSP_REPORT_ONLY: bool = True
+    CSP_REPORT_ONLY: bool = False
 
     # Site
     SITE_TITLE: str = "jmpd.sh blog"

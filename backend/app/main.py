@@ -7,6 +7,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app.api.main import api_router
 from app.core.config import settings
@@ -83,8 +84,8 @@ register_exception_handlers(app)
 app.state.limiter = limiter
 
 # 4. Middleware — last-added runs first, so add order is:
-#    Metrics → RequestLogging → TraceId → CORS → SecurityHeaders
-#    Execution order: SecurityHeaders → CORS → TraceId → RequestLogging → Metrics
+#    Metrics → RequestLogging → TraceId → CORS → TrustedHost → SecurityHeaders
+#    Execution order: SecurityHeaders → TrustedHost → CORS → TraceId → RequestLogging → Metrics
 app.add_middleware(MetricsMiddleware)  # type: ignore[arg-type]
 app.add_middleware(RequestLoggingMiddleware)  # type: ignore[arg-type]
 app.add_middleware(TraceIdMiddleware)  # type: ignore[arg-type]
@@ -95,6 +96,11 @@ if settings.all_cors_origins:
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
         allow_headers=["Authorization", "Content-Type", "Accept"],
+    )
+if settings.ENVIRONMENT != "local":
+    app.add_middleware(
+        TrustedHostMiddleware,  # type: ignore[arg-type]
+        allowed_hosts=[settings.DOMAIN, f"www.{settings.DOMAIN}"],
     )
 app.add_middleware(SecurityHeadersMiddleware)  # type: ignore[arg-type]
 
