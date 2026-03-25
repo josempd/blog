@@ -60,8 +60,12 @@ video {
   --tracking-wide: 0.05em;
 
   /* Components */
+  --radius-sm: 0.25rem;
   --radius: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
 
   /* Motion */
   --duration-fast: 150ms;
