@@ -1,5 +1,5 @@
 # --- Islands build stage ---
-FROM node:25-slim AS islands
+FROM node:26-slim AS islands
 WORKDIR /build
 COPY islands/package.json islands/package-lock.json* ./
 RUN npm ci
